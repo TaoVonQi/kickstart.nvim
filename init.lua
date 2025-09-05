@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -125,6 +125,7 @@ vim.o.breakindent = true
 vim.o.undofile = true
 
 -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
+
 vim.o.ignorecase = true
 vim.o.smartcase = true
 
@@ -185,10 +186,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal mode
--- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
--- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
--- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
--- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
+vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
+vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
+vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
@@ -198,6 +199,8 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+
+vim.keymap.set('n', '<C-w>t', ':tabnew<cr>', { desc = 'new [t]ab' })
 
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
 -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
@@ -246,6 +249,15 @@ rtp:prepend(lazypath)
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
+
+  'tpope/vim-fugitive',
+  'tpope/vim-unimpaired',
+  'tpope/vim-surround',
+
+  'tpope/vim-dadbod',
+  'kristijanhusak/vim-dadbod-completion',
+  'kristijanhusak/vim-dadbod-ui',
+
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
 
@@ -282,6 +294,162 @@ require('lazy').setup({
         changedelete = { text = '~' },
       },
     },
+  },
+
+  { --smart-splits
+    'mrjones2014/smart-splits.nvim',
+    config = function()
+      local splits = require 'smart-splits'
+
+      -- recommended mappings
+      -- resizing splits
+      -- these keymaps will also accept a range,
+      -- for example `10<A-h>` will `resize_left` by `(10 * config.default_amount)`
+      vim.keymap.set('n', '<A-h>', splits.resize_left)
+      vim.keymap.set('n', '<A-j>', splits.resize_down)
+      vim.keymap.set('n', '<A-k>', splits.resize_up)
+      vim.keymap.set('n', '<A-l>', splits.resize_right)
+      -- moving between splits
+      vim.keymap.set('n', '<C-h>', splits.move_cursor_left)
+      vim.keymap.set('n', '<C-j>', splits.move_cursor_down)
+      vim.keymap.set('n', '<C-k>', splits.move_cursor_up)
+      vim.keymap.set('n', '<C-l>', splits.move_cursor_right)
+      vim.keymap.set('n', '<C-\\>', splits.move_cursor_previous)
+      -- swapping buffers between windows
+      vim.keymap.set('n', '<leader><leader>h', splits.swap_buf_left, { desc = 'Swap left buffer' })
+      vim.keymap.set('n', '<leader><leader>j', splits.swap_buf_down, { desc = 'Swap lower buffer' })
+      vim.keymap.set('n', '<leader><leader>k', splits.swap_buf_up, { desc = 'Swap upper buffer' })
+      vim.keymap.set('n', '<leader><leader>l', splits.swap_buf_right, { desc = 'Swap right buffer' })
+
+      splits.setup {
+        -- Ignored buffer types (only while resizing)
+        ignored_buftypes = {
+          'nofile',
+          'quickfix',
+          'prompt',
+        },
+        -- Ignored filetypes (only while resizing)
+        ignored_filetypes = { 'neo-tree' },
+        -- the default number of lines/columns to resize by at a time
+        default_amount = 3,
+        -- Desired behavior when your cursor is at an edge and you
+        -- are moving towards that same edge:
+        -- 'wrap' => Wrap to opposite side
+        -- 'split' => Create a new split in the desired direction
+        -- 'stop' => Do nothing
+        -- function => You handle the behavior yourself
+        -- NOTE: If using a function, the function will be called with
+        -- a context object with the following fields:
+        -- {
+        --    mux = {
+        --      type:'tmux'|'wezterm'|'kitty'
+        --      current_pane_id():number,
+        --      is_in_session(): boolean
+        --      current_pane_is_zoomed():boolean,
+        --      -- following methods return a boolean to indicate success or failure
+        --      current_pane_at_edge(direction:'left'|'right'|'up'|'down'):boolean
+        --      next_pane(direction:'left'|'right'|'up'|'down'):boolean
+        --      resize_pane(direction:'left'|'right'|'up'|'down'):boolean
+        --      split_pane(direction:'left'|'right'|'up'|'down',size:number|nil):boolean
+        --    },
+        --    direction = 'left'|'right'|'up'|'down',
+        --    split(), -- utility function to split current Neovim pane in the current direction
+        --    wrap(), -- utility function to wrap to opposite Neovim pane
+        -- }
+        -- NOTE: `at_edge = 'wrap'` is not supported on Kitty terminal
+        -- multiplexer, as there is no way to determine layout via the CLI
+        at_edge = 'wrap',
+        -- when moving cursor between splits left or right,
+        -- place the cursor on the same row of the *screen*
+        -- regardless of line numbers. False by default.
+        -- Can be overridden via function parameter, see Usage.
+        move_cursor_same_row = false,
+        -- whether the cursor should follow the buffer when swapping
+        -- buffers by default; it can also be controlled by passing
+        -- `{ move_cursor = true }` or `{ move_cursor = false }`
+        -- when calling the Lua function.
+        cursor_follows_swapped_bufs = false,
+        -- resize mode options
+        resize_mode = {
+          -- key to exit persistent resize mode
+          quit_key = '<ESC>',
+          -- keys to use for moving in resize mode
+          -- in order of left, down, up' right
+          resize_keys = { 'h', 'j', 'k', 'l' },
+          -- set to true to silence the notifications
+          -- when entering/exiting persistent resize mode
+          silent = false,
+          -- must be functions, they will be executed when
+          -- entering or exiting the resize mode
+          hooks = {
+            on_enter = nil,
+            on_leave = nil,
+          },
+        },
+        -- ignore these autocmd events (via :h eventignore) while processing
+        -- smart-splits.nvim computations, which involve visiting different
+        -- buffers and windows. These events will be ignored during processing,
+        -- and un-ignored on completed. This only applies to resize events,
+        -- not cursor movement events.
+        ignored_events = {
+          'BufEnter',
+          'WinEnter',
+        },
+        -- enable or disable a multiplexer integration;
+        -- automatically determined, unless explicitly disabled or set,
+        -- by checking the $TERM_PROGRAM environment variable,
+        -- and the $KITTY_LISTEN_ON environment variable for Kitty
+        multiplexer_integration = nil,
+        -- disable multiplexer navigation if current multiplexer pane is zoomed
+        -- this functionality is only supported on tmux and Wezterm due to kitty
+        -- not having a way to check if a pane is zoomed
+        disable_multiplexer_nav_when_zoomed = true,
+        -- Supply a Kitty remote control password if needed,
+        -- or you can also set vim.g.smart_splits_kitty_password
+        -- see https://sw.kovidgoyal.net/kitty/conf/#opt-kitty.remote_control_password
+        -- default logging level, one of: 'trace'|'debug'|'info'|'warn'|'error'|'fatal'
+        log_level = 'info',
+      }
+    end,
+  },
+
+  { --leap
+    'ggandor/leap.nvim',
+
+    config = function()
+      vim.keymap.set({ 'n', 'v', 'x' }, '<leader>l', '<Plug>(leap-forward)', { desc = '[l]eap forward' })
+      vim.keymap.set({ 'n', 'v', 'x' }, '<leader>L', '<Plug>(leap-backward)', { desc = '[L]eap backwards' })
+    end,
+  },
+
+  { --vim-illuminate
+    'RRethy/vim-illuminate',
+    event = 'VimEnter', -- Sets the loading event to 'VimEnter'
+    config = function() -- This is the function that runs, AFTER loading
+      vim.keymap.set('n', '<C-n>', require('illuminate').goto_next_reference, { desc = 'Move to next reference' })
+
+      vim.keymap.set('n', '<C-p>', require('illuminate').goto_prev_reference, { desc = 'Move to previous reference' })
+
+      require('illuminate').configure {
+        -- providers: provider used to get references in the buffer, ordered by priority
+        providers = {
+          'nvim-treesitter',
+          'lsp',
+          'regex',
+        },
+        -- delay: delay in milliseconds
+        delay = 50,
+      }
+    end,
+  },
+
+  { --crates
+    'saecki/crates.nvim',
+    tag = 'stable',
+    event = { 'BufRead Cargo.toml' },
+    config = function()
+      require('crates').setup()
+    end,
   },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
@@ -424,6 +592,27 @@ require('lazy').setup({
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
 
+      local crates = require 'crates'
+
+      vim.keymap.set('n', '<leader>gt', crates.toggle, { desc = 'car[g]o [t]oggle' })
+      vim.keymap.set('n', '<leader>gr', crates.reload, { desc = 'car[g]o [r]eload' })
+
+      vim.keymap.set('n', '<leader>gv', crates.show_versions_popup, { desc = 'car[g]o [v]ersions popup' })
+      vim.keymap.set('n', '<leader>gf', crates.show_features_popup, { desc = 'car[g]o [f]eatures popup' })
+      vim.keymap.set('n', '<leader>gd', crates.show_dependencies_popup, { desc = 'car[g]o [d]ependencies popup' })
+
+      vim.keymap.set('n', '<leader>gu', crates.update_crate, { desc = 'car[g]o [u]pdate crate' })
+      vim.keymap.set('v', '<leader>gu', crates.update_crates, { desc = 'car[g]o [u]pdate crates' })
+      vim.keymap.set('n', '<leader>ga', crates.update_all_crates, { desc = 'car[g]o update [a]ll crates' })
+
+      vim.keymap.set('n', '<leader>gx', crates.expand_plain_crate_to_inline_table, { desc = 'car[g]o e[x]pand' })
+      vim.keymap.set('n', '<leader>gX', crates.extract_crate_into_table, { desc = 'car[g]o e[X]tract' })
+
+      vim.keymap.set('n', '<leader>gH', crates.open_homepage, { desc = 'car[g]o [H]ome page' })
+      vim.keymap.set('n', '<leader>gR', crates.open_repository, { desc = 'car[g]o [R]epository' })
+      vim.keymap.set('n', '<leader>gD', crates.open_documentation, { desc = 'car[g]o [D]ocumentation' })
+      vim.keymap.set('n', '<leader>gC', crates.open_crates_io, { desc = 'car[g]o [C]rates.io' })
+
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
@@ -435,7 +624,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-      vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader><leader>f', builtin.buffers, { desc = '[F]ind existing buffers' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
@@ -555,8 +744,6 @@ require('lazy').setup({
           --  To jump back, press <C-t>.
           map('grd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
 
-          -- WARN: This is not Goto Definition, this is Goto Declaration.
-          --  For example, in C this would take you to the header.
           map('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
           -- Fuzzy find all the symbols in your current document.
@@ -671,11 +858,75 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
-        -- gopls = {},
-        -- pyright = {},
-        -- rust_analyzer = {},
+        rust_analyzer = {},
+
+        html = {},
+
+        ruff = {},
+
+        pyright = {
+          settings = {
+            pyright = {
+              disableOrganizeImports = true, -- Using Ruff
+            },
+            python = {
+              analysis = {
+                ignore = { '*' }, -- Using Ruff
+                typeCheckingMode = 'off', -- Using mypy
+              },
+            },
+          },
+        },
+
+        tailwindcss = {
+          filetypes = {
+            'rust',
+            'css',
+            'html',
+            'javascript',
+            'typescript',
+            'typescriptreact',
+          },
+          init_options = {
+            userLanguages = {
+              rust = 'html',
+            },
+          },
+        },
+
+        emmet_language_server = {
+          filetypes = {
+            'css',
+            'html',
+            'javascript',
+            'rust',
+          },
+          -- Read more about this options in the [vscode docs](https://code.visualstudio.com/docs/editor/emmet#_emmet-configuration).
+          -- **Note:** only the options listed in the table are supported.
+          init_options = {
+            ---@type table<string, string>
+            includeLanguages = {},
+            --- @type string[]
+            excludeLanguages = {},
+            --- @type string[]
+            extensionsPath = {},
+            --- @type table<string, any> [Emmet Docs](https://docs.emmet.io/customization/preferences/)
+            preferences = {},
+            --- @type boolean Defaults to `true`
+            showAbbreviationSuggestions = true,
+            --- @type "always" | "never" Defaults to `"always"`
+            showExpandedAbbreviation = 'always',
+            --- @type boolean Defaults to `false`
+            showSuggestionsAsSnippets = true,
+            --- @type table<string, any> [Emmet Docs](https://docs.emmet.io/customization/syntax-profiles/)
+            syntaxProfiles = {},
+            --- @type table<string, string> [Emmet Docs](https://docs.emmet.io/customization/snippets/#variables)
+            variables = {},
+          },
+        },
+
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
+
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
@@ -869,7 +1120,7 @@ require('lazy').setup({
       -- the rust implementation via `'prefer_rust_with_warning'`
       --
       -- See :h blink-cmp-config-fuzzy for more information
-      fuzzy = { implementation = 'lua' },
+      fuzzy = { implementation = 'prefer_rust_with_warning' },
 
       -- Shows a signature help window while you type arguments for a function
       signature = { enabled = true },
@@ -944,7 +1195,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'rust', 'javascript', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -974,17 +1225,17 @@ require('lazy').setup({
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
   -- require 'kickstart.plugins.debug',
-  -- require 'kickstart.plugins.indent_line',
-  -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  require 'kickstart.plugins.indent_line',
+  require 'kickstart.plugins.lint',
+  require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.neo-tree',
+  require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
