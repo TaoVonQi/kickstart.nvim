@@ -261,9 +261,27 @@ require('lazy').setup({
   'kristijanhusak/vim-dadbod-completion',
   'kristijanhusak/vim-dadbod-ui',
 
-  -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
 
+  {
+    'Joakker/lua-json5',
+    build = './install.sh',
+  },
+
+  {
+    'ravitemer/mcphub.nvim',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+    },
+    build = 'bundled_build.lua', -- Bundles `mcp-hub` binary along with the neovim plugin
+    config = function()
+      require('mcphub').setup {
+        use_bundled_binary = true, -- Use local `mcp-hub` binary
+        json_decode = require('json5').parse,
+      }
+    end,
+  },
+  --
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -665,6 +683,8 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>u', '<cmd>Telescope undo<cr>', { desc = 'Telescope [u]ndo' })
 
       vim.keymap.set('n', '<leader>p', ':Telescope persisted<cr>', { desc = '[p]ersisted sessions' })
+
+      vim.keymap.set('n', '<leader>M', ':MCPHub<cr>', { desc = '[M]cpHub' })
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
@@ -1139,7 +1159,7 @@ require('lazy').setup({
         -- <c-k>: Toggle signature help
         --
         -- See :h blink-cmp-config-keymap for defining your own keymap
-        preset = 'default',
+        preset = 'enter',
 
         -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
         --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
