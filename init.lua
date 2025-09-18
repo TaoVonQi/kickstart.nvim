@@ -1258,7 +1258,7 @@ require('lazy').setup({
       },
 
       sources = {
-        default = { 'lsp', 'path', 'snippets', 'buffer', 'lazydev' },
+        default = { 'lsp', 'path', 'snippets', 'buffer', 'lazydev', 'dictionary', 'thesaurus' },
         providers = {
           lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
           dadbod = { name = 'Dadbod', module = 'vim_dadbod_completion.blink' },
@@ -1308,8 +1308,6 @@ require('lazy').setup({
         },
         per_filetype = {
           sql = { 'snippets', 'dadbod', 'buffer' },
-          text = { 'dictionary', 'thesaurus' },
-          markdown = { 'thesaurus', 'thesaurus' },
         },
       },
 
