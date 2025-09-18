@@ -257,9 +257,23 @@ require('lazy').setup({
   'tpope/vim-unimpaired',
   'tpope/vim-surround',
 
-  'tpope/vim-dadbod',
-  'kristijanhusak/vim-dadbod-completion',
-  'kristijanhusak/vim-dadbod-ui',
+  {
+    'kristijanhusak/vim-dadbod-ui',
+    dependencies = {
+      { 'tpope/vim-dadbod', lazy = true },
+      { 'kristijanhusak/vim-dadbod-completion', ft = { 'sql', 'mysql', 'plsql' }, lazy = true },
+    },
+    cmd = {
+      'DBUI',
+      'DBUIToggle',
+      'DBUIAddConnection',
+      'DBUIFindBuffer',
+    },
+    init = function()
+      -- Your DBUI configuration
+      vim.g.db_ui_use_nerd_fonts = 1
+    end,
+  },
 
   'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
 
@@ -281,6 +295,72 @@ require('lazy').setup({
       }
     end,
   },
+
+  {
+    'OXY2DEV/markview.nvim',
+    event = 'VeryLazy',
+    opts = function()
+      local function conceal_tag(icon, hl_group)
+        return {
+          on_node = { hl_group = hl_group },
+          on_closing_tag = { conceal = '' },
+          on_opening_tag = {
+            conceal = '',
+            virt_text_pos = 'inline',
+            virt_text = { { icon .. ' ', hl_group } },
+          },
+        }
+      end
+
+      return {
+        html = {
+          container_elements = {
+            ['^buf$'] = conceal_tag('', 'CodeCompanionChatVariable'),
+            ['^file$'] = conceal_tag('', 'CodeCompanionChatVariable'),
+            ['^help$'] = conceal_tag('󰘥', 'CodeCompanionChatVariable'),
+            ['^image$'] = conceal_tag('', 'CodeCompanionChatVariable'),
+            ['^symbols$'] = conceal_tag('', 'CodeCompanionChatVariable'),
+            ['^url$'] = conceal_tag('󰖟', 'CodeCompanionChatVariable'),
+            ['^var$'] = conceal_tag('', 'CodeCompanionChatVariable'),
+            ['^tool$'] = conceal_tag('', 'CodeCompanionChatTool'),
+            ['^user_prompt$'] = conceal_tag('', 'CodeCompanionChatTool'),
+            ['^group$'] = conceal_tag('', 'CodeCompanionChatToolGroup'),
+          },
+        },
+        preview = {
+          filetypes = { 'markdown', 'codecompanion' },
+          ignore_buftypes = {},
+        },
+      }
+    end,
+  },
+
+  {
+    'olimorris/codecompanion.nvim',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'ravitemer/mcphub.nvim',
+    },
+    opts = {},
+    extensions = {
+      mcphub = {
+        callback = 'mcphub.extensions.codecompanion',
+        opts = {
+          -- MCP Tools
+          make_tools = true, -- Make individual tools (@server__tool) and server groups (@server) from MCP servers
+          show_server_tools_in_chat = true, -- Show individual tools in chat completion (when make_tools=true)
+          add_mcp_prefix_to_tool_names = false, -- Add mcp__ prefix (e.g `@mcp__github`, `@mcp__neovim__list_issues`)
+          show_result_in_chat = true, -- Show tool results directly in chat buffer
+          format_tool = nil, -- function(tool_name:string, tool: CodeCompanion.Agent.Tool) : string Function to format tool names to show in the chat buffer
+          -- MCP Resources
+          make_vars = true, -- Convert MCP resources to #variables for prompts
+          -- MCP Prompts
+          make_slash_commands = true, -- Add MCP prompts as /slash commands
+        },
+      },
+    },
+  },
+
   --
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -288,7 +368,6 @@ require('lazy').setup({
   --
   -- Use `opts = {}` to automatically pass options to a plugin's `setup()` function, forcing the plugin to be loaded.
   --
-
   -- Alternatively, use `config = function() ... end` for full control over the configuration.
   -- If you prefer to call `setup` explicitly, use:
   --    {
@@ -1106,8 +1185,10 @@ require('lazy').setup({
     event = 'VimEnter',
     version = '1.*',
     dependencies = {
-      -- Snippet Engine
+      'folke/lazydev.nvim',
+      'archie-judd/blink-cmp-words',
       {
+        -- Snippet Engine
         'L3MON4D3/LuaSnip',
         version = '2.*',
         build = (function()
@@ -1132,7 +1213,6 @@ require('lazy').setup({
         },
         opts = {},
       },
-      'folke/lazydev.nvim',
     },
     --- @module 'blink.cmp'
     --- @type blink.cmp.Config
@@ -1181,6 +1261,55 @@ require('lazy').setup({
         default = { 'lsp', 'path', 'snippets', 'buffer', 'lazydev' },
         providers = {
           lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
+          dadbod = { name = 'Dadbod', module = 'vim_dadbod_completion.blink' },
+          -- Use the thesaurus source
+          thesaurus = {
+            name = 'blink-cmp-words',
+            module = 'blink-cmp-words.thesaurus',
+            -- All available options
+            opts = {
+              -- A score offset applied to returned items.
+              -- By default the highest score is 0 (item 1 has a score of -1, item 2 of -2 etc..).
+              score_offset = 0,
+
+              -- Default pointers define the lexical relations listed under each definition,
+              -- see Pointer Symbols below.
+              -- Default is as below ("antonyms", "similar to" and "also see").
+              definition_pointers = { '!', '&', '^' },
+
+              -- The pointers that are considered similar words when using the thesaurus,
+              -- see Pointer Symbols below.
+              -- Default is as below ("similar to", "also see" }
+              similarity_pointers = { '&', '^' },
+
+              -- The depth of similar words to recurse when collecting synonyms. 1 is similar words,
+              -- 2 is similar words of similar words, etc. Increasing this may slow results.
+              similarity_depth = 2,
+            },
+          },
+
+          -- Use the dictionary source
+          dictionary = {
+            name = 'blink-cmp-words',
+            module = 'blink-cmp-words.dictionary',
+            -- All available options
+            opts = {
+              -- The number of characters required to trigger completion.
+              -- Set this higher if completion is slow, 3 is default.
+              dictionary_search_threshold = 3,
+
+              -- See above
+              score_offset = 0,
+
+              -- See above
+              definition_pointers = { '!', '&', '^' },
+            },
+          },
+        },
+        per_filetype = {
+          sql = { 'snippets', 'dadbod', 'buffer' },
+          text = { 'dictionary', 'thesaurus' },
+          markdown = { 'thesaurus', 'thesaurus' },
         },
       },
 
@@ -1266,6 +1395,8 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
+    dependencies = { 'OXY2DEV/markview.nvim' },
+    lazy = false,
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
       ensure_installed = { 'bash', 'rust', 'javascript', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
