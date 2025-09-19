@@ -846,7 +846,63 @@ require('lazy').setup({
 
       -- Allows extra capabilities provided by blink.cmp
       'saghen/blink.cmp',
+
+      {
+        'onsails/lspkind.nvim',
+
+        config = function()
+          require('lspkind').setup {
+            --
+            -- default: true
+            -- with_text = true,
+
+            -- defines how annotations are shown
+            -- default: symbol
+            -- options: 'text', 'text_symbol', 'symbol_text', 'symbol'
+            mode = 'symbol_text',
+
+            -- default symbol map
+            -- can be either 'default' (requires nerd-fonts font) or
+            -- 'codicons' for codicon preset (requires vscode-codicons font)
+            --
+            -- default: 'default'
+            preset = 'default',
+
+            -- override preset symbols
+            --
+            -- default: {}
+            -- symbol_map = {
+            --   Text = '󰉿',
+            --   Method = '󰆧',
+            --   Function = '󰊕',
+            --   Constructor = '',
+            --   Field = '󰜢',
+            --   Variable = '󰀫',
+            --   Class = '󰠱',
+            --   Interface = '',
+            --   Module = '',
+            --   Property = '󰜢',
+            --   Unit = '󰑭',
+            --   Value = '󰎠',
+            --   Enum = '',
+            --   Keyword = '󰌋',
+            --   Snippet = '',
+            --   Color = '󰏘',
+            --   File = '󰈙',
+            --   Reference = '󰈇',
+            --   Folder = '󰉋',
+            --   EnumMember = '',
+            --   Constant = '󰏿',
+            --   Struct = '󰙅',
+            --   Event = '',
+            --   Operator = '󰆕',
+            --   TypeParameter = '',
+            -- },
+          }
+        end,
+      },
     },
+
     config = function()
       -- Brief aside: **What is LSP?**
       --
@@ -1201,6 +1257,7 @@ require('lazy').setup({
     dependencies = {
       'folke/lazydev.nvim',
       'archie-judd/blink-cmp-words',
+      'xzbdmw/colorful-menu.nvim',
       {
         'milanglacier/minuet-ai.nvim',
         dependencies = { 'nvim-lua/plenary.nvim' },
@@ -1251,7 +1308,7 @@ require('lazy').setup({
             -- actual number of returned items may exceed this value. Additionally, the
             -- LLM cannot guarantee the exact number of completion items specified, as
             -- this parameter serves only as a prompt guideline.
-            n_completions = 5,
+            n_completions = 3,
 
             -- Length of context after cursor used to filter completion text.
             -- This setting helps prevent the language model from generating redundant
@@ -1385,6 +1442,9 @@ require('lazy').setup({
       },
 
       completion = {
+
+        ghost_text = { enabled = true },
+
         list = {
           selection = {
             preselect = false,
@@ -1401,13 +1461,34 @@ require('lazy').setup({
 
         menu = {
           draw = {
-            kind_icon = {
-              ellipsis = false,
-              text = function(ctx)
-                return require('lspkind').symbolic(ctx.kind, {
-                  mode = 'symbol',
-                })
-              end,
+            -- We don't need label_description now because label and label_description are already
+            -- combined together in label by colorful-menu.nvim.
+            columns = { { 'kind_icon', 'kind', gap = 1 }, { 'label' } },
+            components = {
+              label = {
+                width = { fill = true, max = 60 },
+                text = function(ctx)
+                  local highlights_info = require('colorful-menu').blink_highlights(ctx)
+                  if highlights_info ~= nil then
+                    -- Or you want to add more item to label
+                    return highlights_info.label
+                  else
+                    return ctx.label
+                  end
+                end,
+                highlight = function(ctx)
+                  local highlights = {}
+                  local highlights_info = require('colorful-menu').blink_highlights(ctx)
+                  if highlights_info ~= nil then
+                    highlights = highlights_info.highlights
+                  end
+                  for _, idx in ipairs(ctx.label_matched_indices) do
+                    table.insert(highlights, { idx, idx + 1, group = 'BlinkCmpLabelMatch' })
+                  end
+                  -- Do something else
+                  return highlights
+                end,
+              },
             },
           },
         },
@@ -1422,18 +1503,13 @@ require('lazy').setup({
           dadbod = { name = 'Dadbod', module = 'vim_dadbod_completion.blink' },
 
           path = {
-            name = 'path',
+            name = 'PATH',
             score_offset = 100, -- higher = more preferred
           },
 
-          lsp = {
-            name = 'lsp',
-            score_offset = 90,
-          },
-
           minuet = {
-            name = 'minuet',
-            score_offset = 50, -- Gives minuet higher priority among suggestions
+            name = 'FIM',
+            score_offset = 90, -- Gives minuet higher priority among suggestions
 
             module = 'minuet.blink',
             async = true,
@@ -1442,14 +1518,19 @@ require('lazy').setup({
             timeout_ms = 5000,
           },
 
+          lsp = {
+            name = 'LSP',
+            score_offset = 80,
+          },
+
           snippets = {
-            name = 'snippets',
-            score_offset = 49,
+            name = 'SNPT',
+            score_offset = 70,
           },
 
           -- Use the thesaurus source
           thesaurus = {
-            name = 'blink-cmp-words',
+            name = 'DICT',
             module = 'blink-cmp-words.thesaurus',
             -- All available options
             opts = {
@@ -1475,7 +1556,7 @@ require('lazy').setup({
 
           -- Use the dictionary source
           dictionary = {
-            name = 'blink-cmp-words',
+            name = 'DICT',
             module = 'blink-cmp-words.dictionary',
             -- All available options
             opts = {
