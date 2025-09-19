@@ -225,6 +225,20 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+vim.api.nvim_create_autocmd('VimLeavePre', {
+  desc = 'Close all NeoTree buffers across all tabs',
+  group = vim.api.nvim_create_augroup('NeoTreeBufferCleanup', { clear = true }),
+  callback = function()
+    -- Close all buffers with neo-tree filetype regardless of tab
+    local bufs = vim.api.nvim_list_bufs()
+    for _, buf in ipairs(bufs) do
+      if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].filetype == 'neo-tree' then
+        pcall(vim.api.nvim_buf_delete, buf, { force = true })
+      end
+    end
+  end,
+})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -653,17 +667,17 @@ require('lazy').setup({
       {
         'olimorris/persisted.nvim',
         config = function()
-          vim.api.nvim_create_autocmd({ 'BufEnter' }, {
-            pattern = 'NvimTree*',
-            callback = function()
-              local api = require 'nvim-tree.api'
-              local view = require 'nvim-tree.view'
-
-              if not view.is_visible() then
-                api.tree.open()
-              end
-            end,
-          })
+          -- vim.api.nvim_create_autocmd({ 'BufEnter' }, {
+          --   pattern = 'NvimTree*',
+          --   callback = function()
+          --     local api = require 'nvim-tree.api'
+          --     local view = require 'nvim-tree.view'
+          --
+          --     if not view.is_visible() then
+          --       api.tree.open()
+          --     end
+          --   end,
+          -- })
 
           require('persisted').setup {
             -- save_dir = vim.fn.expand(vim.fn.stdpath("data") .. "/sessions/"), -- directory where session files are saved
@@ -1187,7 +1201,6 @@ require('lazy').setup({
     dependencies = {
       'folke/lazydev.nvim',
       'archie-judd/blink-cmp-words',
-
       {
         'milanglacier/minuet-ai.nvim',
         dependencies = { 'nvim-lua/plenary.nvim' },
@@ -1198,7 +1211,7 @@ require('lazy').setup({
             -- the maximum total characters of the context before and after the cursor
             -- 16000 characters typically equate to approximately 4,000 tokens for
             -- LLMs.
-            context_window = 16000,
+            context_window = 45000,
 
             -- when the total characters exceed the context window, the ratio of
             -- context before cursor and after cursor, the larger the ratio the more
@@ -1230,7 +1243,7 @@ require('lazy').setup({
             -- If completion item has multiple lines, create another completion item
             -- only containing its first line. This option only has impact for cmp and
             -- blink. For virtualtext, no single line entry will be added.
-            add_single_line_entry = true,
+            add_single_line_entry = false,
 
             -- The number of completion items encoded as part of the prompt for the
             -- chat LLM. For FIM model, this is the number of requests to send. It's
@@ -1238,7 +1251,7 @@ require('lazy').setup({
             -- actual number of returned items may exceed this value. Additionally, the
             -- LLM cannot guarantee the exact number of completion items specified, as
             -- this parameter serves only as a prompt guideline.
-            n_completions = 3,
+            n_completions = 5,
 
             -- Length of context after cursor used to filter completion text.
             -- This setting helps prevent the language model from generating redundant
@@ -1266,7 +1279,8 @@ require('lazy').setup({
                 name = 'Ollama',
                 end_point = 'http://localhost:11434/v1/completions',
                 api_key = 'TERM',
-                model = 'starcoder2:7b-fp16',
+                -- model = 'starcoder2:7b-fp16',
+                model = 'deepseek-coder-v2:16b-lite-base-q6_K',
               },
             },
 
@@ -1275,33 +1289,33 @@ require('lazy').setup({
               -- e.g., { 'python', 'lua' }. Note that you can still invoke manual
               -- completion even if the filetype is not on your auto_trigger_ft list.
               -- c,cs,cpp,go,java,javascript,kotlin,lua,php,python,r,ruby,rust,sql,sh,swift,typescript
-              auto_trigger_ft = {
-                'c',
-                'cs',
-                'cpp',
-                'go',
-                'java',
-                'javascript',
-                'kotlin',
-                'lua',
-                'php',
-                'python',
-                'r',
-                'ruby',
-                'rust',
-                'sql',
-                'sh',
-                'swift',
-                'typescript',
-              },
+              -- auto_trigger_ft = {
+              --   'c',
+              --   'cs',
+              --   'cpp',
+              --   'go',
+              --   'java',
+              --   'javascript',
+              --   'kotlin',
+              --   'lua',
+              --   'php',
+              --   'python',
+              --   'r',
+              --   'ruby',
+              --   'rust',
+              --   'sql',
+              --   'sh',
+              --   'swift',
+              --   'typescript',
+              -- },
               -- specify file types where automatic virtual text completion should be
               -- disabled. This option is useful when auto-completion is enabled for
               -- all file types i.e., when auto_trigger_ft = { '*' }
-              auto_trigger_ignore_ft = {},
+              -- auto_trigger_ignore_ft = {},
 
               -- Whether show virtual text suggestion when the completion menu
               -- (nvim-cmp or blink-cmp) is visible.
-              show_on_completion_menu = false,
+              -- show_on_completion_menu = true,
             },
           }
         end,
@@ -1358,7 +1372,7 @@ require('lazy').setup({
         -- <c-k>: Toggle signature help
         --
         -- See :h blink-cmp-config-keymap for defining your own keymap
-        preset = 'enter',
+        preset = 'default',
 
         -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
         --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
@@ -1377,24 +1391,55 @@ require('lazy').setup({
 
         -- Recommended to avoid unnecessary request
         trigger = { prefetch_on_insert = false },
+
+        menu = {
+          draw = {
+            kind_icon = {
+              ellipsis = false,
+              text = function(ctx)
+                return require('lspkind').symbolic(ctx.kind, {
+                  mode = 'symbol',
+                })
+              end,
+            },
+          },
+        },
       },
 
       sources = {
         default = { 'lsp', 'path', 'snippets', 'minuet', 'buffer', 'lazydev', 'dictionary', 'thesaurus' },
+
         providers = {
           lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
 
           dadbod = { name = 'Dadbod', module = 'vim_dadbod_completion.blink' },
 
+          path = {
+            name = 'path',
+            score_offset = 100, -- higher = more preferred
+          },
+
+          lsp = {
+            name = 'lsp',
+            score_offset = 90,
+          },
+
           minuet = {
             name = 'minuet',
+            score_offset = 50, -- Gives minuet higher priority among suggestions
+
             module = 'minuet.blink',
             async = true,
             -- Should match minuet.config.request_timeout * 1000,
             -- since minuet.config.request_timeout is in seconds
             timeout_ms = 5000,
-            score_offset = 50, -- Gives minuet higher priority among suggestions
           },
+
+          snippets = {
+            name = 'snippets',
+            score_offset = 49,
+          },
+
           -- Use the thesaurus source
           thesaurus = {
             name = 'blink-cmp-words',
@@ -1439,8 +1484,9 @@ require('lazy').setup({
             },
           },
         },
+
         per_filetype = {
-          sql = { 'snippets', 'dadbod', 'buffer' },
+          sql = { 'minuet', 'snippets', 'dadbod', 'buffer' },
         },
       },
 
