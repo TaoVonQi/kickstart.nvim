@@ -1187,6 +1187,125 @@ require('lazy').setup({
     dependencies = {
       'folke/lazydev.nvim',
       'archie-judd/blink-cmp-words',
+
+      {
+        'milanglacier/minuet-ai.nvim',
+        dependencies = { 'nvim-lua/plenary.nvim' },
+
+        config = function()
+          require('minuet').setup {
+
+            -- the maximum total characters of the context before and after the cursor
+            -- 16000 characters typically equate to approximately 4,000 tokens for
+            -- LLMs.
+            context_window = 16000,
+
+            -- when the total characters exceed the context window, the ratio of
+            -- context before cursor and after cursor, the larger the ratio the more
+            -- context before cursor will be used. This option should be between 0 and
+            -- 1, context_ratio = 0.75 means the ratio will be 3:1.
+            context_ratio = 0.75,
+
+            throttle = 1000, -- only send the request every x milliseconds, use 0 to disable throttle.
+
+            -- debounce the request in x milliseconds, set to 0 to disable debounce
+            debounce = 1000,
+
+            -- Control notification display for request status
+            -- Notification options:
+            -- false: Disable all notifications (use boolean false, not string "false")
+            -- "debug": Display all notifications (comprehensive debugging)
+            -- "verbose": Display most notifications
+            -- "warn": Display warnings and errors only
+            -- "error": Display errors only
+            notify = 'warn',
+
+            -- The request timeout, measured in seconds. When streaming is enabled
+            -- (stream = true), setting a shorter request_timeout allows for faster
+            -- retrieval of completion items, albeit potentially incomplete.
+            -- Conversely, with streaming disabled (stream = false), a timeout
+            -- occurring before the LLM returns results will yield no completion items.
+            request_timeout = 5,
+
+            -- If completion item has multiple lines, create another completion item
+            -- only containing its first line. This option only has impact for cmp and
+            -- blink. For virtualtext, no single line entry will be added.
+            add_single_line_entry = true,
+
+            -- The number of completion items encoded as part of the prompt for the
+            -- chat LLM. For FIM model, this is the number of requests to send. It's
+            -- important to note that when 'add_single_line_entry' is set to true, the
+            -- actual number of returned items may exceed this value. Additionally, the
+            -- LLM cannot guarantee the exact number of completion items specified, as
+            -- this parameter serves only as a prompt guideline.
+            n_completions = 3,
+
+            -- Length of context after cursor used to filter completion text.
+            -- This setting helps prevent the language model from generating redundant
+            -- text.  When filtering completions, the system compares the suffix of a
+            -- completion candidate with the text immediately following the cursor.
+            --
+            -- If the length of the longest common substring between the end of the
+            -- candidate and the beginning of the post-cursor context exceeds this
+            -- value, that common portion is trimmed from the candidate.
+            --
+            -- For example, if the value is 15, and a completion candidate ends with a
+            -- 20-character string that exactly matches the 20 characters following the
+            -- cursor, the candidate will be truncated by those 20 characters before
+            -- being delivered.
+            after_cursor_filter_length = 15,
+
+            -- Similar to after_cursor_filter_length but trim the completion item from
+            -- prefix instead of suffix.
+            before_cursor_filter_length = 2,
+
+            provider = 'openai_fim_compatible',
+
+            provider_options = {
+              openai_fim_compatible = {
+                name = 'Ollama',
+                end_point = 'http://localhost:11434/v1/completions',
+                api_key = 'TERM',
+                model = 'starcoder2:7b-fp16',
+              },
+            },
+
+            virtualtext = {
+              -- Specify the filetypes to enable automatic virtual text completion,
+              -- e.g., { 'python', 'lua' }. Note that you can still invoke manual
+              -- completion even if the filetype is not on your auto_trigger_ft list.
+              -- c,cs,cpp,go,java,javascript,kotlin,lua,php,python,r,ruby,rust,sql,sh,swift,typescript
+              auto_trigger_ft = {
+                'c',
+                'cs',
+                'cpp',
+                'go',
+                'java',
+                'javascript',
+                'kotlin',
+                'lua',
+                'php',
+                'python',
+                'r',
+                'ruby',
+                'rust',
+                'sql',
+                'sh',
+                'swift',
+                'typescript',
+              },
+              -- specify file types where automatic virtual text completion should be
+              -- disabled. This option is useful when auto-completion is enabled for
+              -- all file types i.e., when auto_trigger_ft = { '*' }
+              auto_trigger_ignore_ft = {},
+
+              -- Whether show virtual text suggestion when the completion menu
+              -- (nvim-cmp or blink-cmp) is visible.
+              show_on_completion_menu = false,
+            },
+          }
+        end,
+      },
       {
         -- Snippet Engine
         'L3MON4D3/LuaSnip',
@@ -1255,13 +1374,27 @@ require('lazy').setup({
         -- By default, you may press `<c-space>` to show the documentation.
         -- Optionally, set `auto_show = true` to show the documentation after a delay.
         documentation = { auto_show = true, auto_show_delay_ms = 500 },
+
+        -- Recommended to avoid unnecessary request
+        trigger = { prefetch_on_insert = false },
       },
 
       sources = {
-        default = { 'lsp', 'path', 'snippets', 'buffer', 'lazydev', 'dictionary', 'thesaurus' },
+        default = { 'lsp', 'path', 'snippets', 'minuet', 'buffer', 'lazydev', 'dictionary', 'thesaurus' },
         providers = {
           lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
+
           dadbod = { name = 'Dadbod', module = 'vim_dadbod_completion.blink' },
+
+          minuet = {
+            name = 'minuet',
+            module = 'minuet.blink',
+            async = true,
+            -- Should match minuet.config.request_timeout * 1000,
+            -- since minuet.config.request_timeout is in seconds
+            timeout_ms = 5000,
+            score_offset = 50, -- Gives minuet higher priority among suggestions
+          },
           -- Use the thesaurus source
           thesaurus = {
             name = 'blink-cmp-words',
@@ -1373,22 +1506,96 @@ require('lazy').setup({
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
-      local statusline = require 'mini.statusline'
+      -- local statusline = require 'mini.statusline'
+
       -- set use_icons to true if you have a Nerd Font
-      statusline.setup { use_icons = vim.g.have_nerd_font }
+      -- statusline.setup { use_icons = vim.g.have_nerd_font }
 
       -- You can configure sections in the statusline by overriding their
       -- default behavior. For example, here we set the section for
       -- cursor location to LINE:COLUMN
-      ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        return '%2l:%-2v'
-      end
-
+      -- -@diagnostic disable-next-line: duplicate-set-field
+      -- statusline.section_location = function()
+      --   return '%2l:%-2v'
+      -- end
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
+
+  {
+    'nvim-lualine/lualine.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons', 'tpope/vim-fugitive' },
+    config = function()
+      local colors = {
+        blue = '#80a0ff',
+        cyan = '#79dac8',
+        black = '#080808',
+        white = '#c6c6c6',
+        red = '#ff5189',
+        violet = '#d183e8',
+        grey = '#303030',
+      }
+
+      local bubbles_theme = {
+        normal = {
+          a = { fg = colors.black, bg = colors.violet },
+          b = { fg = colors.white, bg = colors.grey },
+          c = { fg = colors.white },
+        },
+
+        insert = { a = { fg = colors.black, bg = colors.blue } },
+        visual = { a = { fg = colors.black, bg = colors.cyan } },
+        replace = { a = { fg = colors.black, bg = colors.red } },
+
+        inactive = {
+          a = { fg = colors.white, bg = colors.black },
+          b = { fg = colors.white, bg = colors.black },
+          c = { fg = colors.white },
+        },
+      }
+
+      require('lualine').setup {
+        options = {
+          theme = bubbles_theme,
+          component_separators = '',
+          section_separators = { left = '', right = '' },
+        },
+        sections = {
+          lualine_a = { { 'mode', separator = { left = '' }, right_padding = 2 } },
+          lualine_b = { 'filename', 'branch' },
+          lualine_c = {
+            {
+              require 'minuet.lualine',
+              -- the follwing is the default configuration
+              -- the name displayed in the lualine. Set to "provider", "model" or "both"
+              -- display_name = 'both',
+              -- separator between provider and model name for option "both"
+              -- provider_model_separator = ':',
+              -- whether show display_name when no completion requests are active
+              -- display_on_idle = false,
+            },
+          },
+          lualine_x = { 'searchcount', 'selectioncount', 'lsp_status' },
+          lualine_y = { 'filetype', 'progress' },
+          lualine_z = {
+            { 'location', separator = { right = '' }, left_padding = 2 },
+          },
+        },
+        inactive_sections = {
+          lualine_a = { 'filename' },
+          lualine_b = {},
+          lualine_c = {},
+          lualine_x = {},
+          lualine_y = {},
+          lualine_z = { 'location' },
+        },
+        tabline = {},
+        extensions = {},
+      }
+    end,
+  },
+
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
