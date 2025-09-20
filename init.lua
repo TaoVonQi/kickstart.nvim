@@ -205,6 +205,12 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 
 vim.keymap.set('n', '<C-w>t', ':tabnew<cr>', { desc = 'new [t]ab' })
 
+vim.keymap.set('n', '<leader>cct', ':CodeCompanionChat Toggle<CR>', { desc = '[C]ode[Companion] [T]oggle ' })
+vim.keymap.set('n', '<leader>cca', ':CodeCompanionActions<CR>', { desc = '[C]ode[Companion] [A]ctions ' })
+vim.keymap.set('n', '<leader>ccc', ':CodeCompanionCmd<CR>', { desc = '[C]ode[Companion] [C]md ' })
+vim.keymap.set('n', '<leader>cch', ':CodeCompanionHistory<CR>', { desc = '[C]ode[Companion] [H]istory ' })
+vim.keymap.set('n', '<leader>ccs', ':CodeCompanionSummaries<CR>', { desc = '[C]ode[Companion] [S]ummaries ' })
+
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
 -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
 -- vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
@@ -239,6 +245,20 @@ vim.api.nvim_create_autocmd('VimLeavePre', {
   end,
 })
 
+vim.api.nvim_create_autocmd('VimLeavePre', {
+  desc = 'Close all codecompanion buffers across all tabs',
+  group = vim.api.nvim_create_augroup('CodecompanionBufferCleanup', { clear = true }),
+  callback = function()
+    -- Close all buffers with codecompanion filetype regardless of tab
+    local bufs = vim.api.nvim_list_bufs()
+    for _, buf in ipairs(bufs) do
+      if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].filetype == 'codecompanion' then
+        pcall(vim.api.nvim_buf_delete, buf, { force = true })
+      end
+    end
+  end,
+})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -267,6 +287,8 @@ rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
 
+  'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+
   'tpope/vim-fugitive',
   'tpope/vim-unimpaired',
   'tpope/vim-surround',
@@ -288,8 +310,6 @@ require('lazy').setup({
       vim.g.db_ui_use_nerd_fonts = 1
     end,
   },
-
-  'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
 
   {
     'Joakker/lua-json5',
@@ -354,22 +374,104 @@ require('lazy').setup({
     dependencies = {
       'nvim-lua/plenary.nvim',
       'ravitemer/mcphub.nvim',
+      'ravitemer/codecompanion-history.nvim',
     },
-    opts = {},
-    extensions = {
-      mcphub = {
-        callback = 'mcphub.extensions.codecompanion',
-        opts = {
-          -- MCP Tools
-          make_tools = true, -- Make individual tools (@server__tool) and server groups (@server) from MCP servers
-          show_server_tools_in_chat = true, -- Show individual tools in chat completion (when make_tools=true)
-          add_mcp_prefix_to_tool_names = false, -- Add mcp__ prefix (e.g `@mcp__github`, `@mcp__neovim__list_issues`)
-          show_result_in_chat = true, -- Show tool results directly in chat buffer
-          format_tool = nil, -- function(tool_name:string, tool: CodeCompanion.Agent.Tool) : string Function to format tool names to show in the chat buffer
-          -- MCP Resources
-          make_vars = true, -- Convert MCP resources to #variables for prompts
-          -- MCP Prompts
-          make_slash_commands = true, -- Add MCP prompts as /slash commands
+    opts = {
+      strategies = {
+        chat = { adapter = { name = 'ollama', model = 'mygptoss_high_reasoning:20b' } },
+        inline = { adapter = { name = 'ollama', model = 'mygptoss_high_reasoning:20b' } },
+        cmd = { adapter = { name = 'ollama', model = 'mygptoss_high_reasoning:20b' } },
+      },
+      display = {
+
+        action_palette = {
+          width = 180,
+          height = 50,
+          provider = 'telescope', -- Can be "default", "telescope", "fzf_lua", "mini_pick" or "snacks". If not specified, the plugin will autodetect installed providers.
+          opts = {
+            show_default_actions = true, -- Show the default actions in the action palette?
+            show_default_prompt_library = true, -- Show the default prompt library in the action palette?
+            title = 'CodeCompanion actions', -- The title of the action palette
+          },
+        },
+      },
+      extensions = {
+        mcphub = {
+          callback = 'mcphub.extensions.codecompanion',
+          opts = {
+            -- MCP Tools
+            make_tools = true, -- Make individual tools (@server__tool) and server groups (@server) from MCP servers
+            show_server_tools_in_chat = true, -- Show individual tools in chat completion (when make_tools=true)
+            add_mcp_prefix_to_tool_names = false, -- Add mcp__ prefix (e.g `@mcp__github`, `@mcp__neovim__list_issues`)
+            show_result_in_chat = true, -- Show tool results directly in chat buffer
+            format_tool = nil, -- function(tool_name:string, tool: CodeCompanion.Agent.Tool) : string Function to format tool names to show in the chat buffer
+            -- MCP Resources
+            make_vars = true, -- Convert MCP resources to #variables for prompts
+            -- MCP Prompts
+            make_slash_commands = true, -- Add MCP prompts as /slash commands
+          },
+        },
+
+        history = {
+          enabled = true,
+          opts = {
+            -- Keymap to open history from chat buffer (default: gh)
+            keymap = 'gao',
+            -- Keymap to save the current chat manually (when auto_save is disabled)
+            save_chat_keymap = 'gas',
+            -- Save all chats by default (disable to save only manually using 'sc')
+            auto_save = true,
+            -- Number of days after which chats are automatically deleted (0 to disable)
+            expiration_days = 0,
+            -- Picker interface (auto resolved to a valid picker)
+            picker = 'telescope', --- ("telescope", "snacks", "fzf-lua", or "default")
+            ---Optional filter function to control which chats are shown when browsing
+            chat_filter = nil, -- function(chat_data) return boolean end
+            -- Customize picker keymaps (optional)
+            picker_keymaps = {
+              rename = { n = 'r', i = '<M-r>' },
+              delete = { n = 'd', i = '<M-d>' },
+              duplicate = { n = '<C-y>', i = '<C-y>' },
+            },
+            ---Automatically generate titles for new chats
+            auto_generate_title = true,
+            title_generation_opts = {
+              ---Number of user prompts after which to refresh the title (0 to disable)
+              refresh_every_n_prompts = 5, -- e.g., 3 to refresh after every 3rd user prompt
+              ---Maximum number of times to refresh the title (default: 3)
+              max_refreshes = 5,
+              format_title = function(original_title)
+                -- this can be a custom function that applies some custom
+                -- formatting to the title.
+                return original_title
+              end,
+            },
+            ---On exiting and entering neovim, loads the last chat on opening chat
+            continue_last_chat = false,
+            ---When chat is cleared with `gx` delete the chat from history
+            delete_on_clearing_chat = false,
+            ---Directory path to save the chats
+            dir_to_save = vim.fn.stdpath 'data' .. '/codecompanion-history',
+            ---Enable detailed logging for history extension
+            enable_logging = false,
+
+            -- Summary system
+            summary = {
+              -- Keymap to generate summary for current chat (default: "gcs")
+              create_summary_keymap = 'gac',
+              -- Keymap to browse summaries (default: "gbs")
+              browse_summaries_keymap = 'gab',
+
+              generation_opts = {
+                context_size = 128000, -- max tokens that the model supports
+                include_references = true, -- include slash command content
+                include_tool_outputs = true, -- include tool execution results
+              },
+            },
+
+            -- Memory system (requires VectorCode CLI)
+            memory = {},
+          },
         },
       },
     },
@@ -1279,7 +1381,7 @@ require('lazy').setup({
             throttle = 1000, -- only send the request every x milliseconds, use 0 to disable throttle.
 
             -- debounce the request in x milliseconds, set to 0 to disable debounce
-            debounce = 1000,
+            debounce = 500,
 
             -- Control notification display for request status
             -- Notification options:
@@ -1337,7 +1439,9 @@ require('lazy').setup({
                 end_point = 'http://localhost:11434/v1/completions',
                 api_key = 'TERM',
                 -- model = 'starcoder2:7b-fp16',
-                model = 'deepseek-coder-v2:16b-lite-base-q6_K',
+                -- model = 'starcoder2:7b-q8_0',
+                model = 'mydeepseek_coder_v2:16b_lite_base_q6_K',
+                stream = true,
               },
             },
 
@@ -1454,12 +1558,13 @@ require('lazy').setup({
 
         -- By default, you may press `<c-space>` to show the documentation.
         -- Optionally, set `auto_show = true` to show the documentation after a delay.
-        documentation = { auto_show = true, auto_show_delay_ms = 500 },
+        documentation = { auto_show = true, auto_show_delay_ms = 50, window = { border = 'rounded' } },
 
         -- Recommended to avoid unnecessary request
         trigger = { prefetch_on_insert = false },
 
         menu = {
+          border = 'rounded',
           draw = {
             -- We don't need label_description now because label and label_description are already
             -- combined together in label by colorful-menu.nvim.
@@ -1498,18 +1603,19 @@ require('lazy').setup({
         default = { 'lsp', 'path', 'snippets', 'minuet', 'buffer', 'lazydev', 'dictionary', 'thesaurus' },
 
         providers = {
-          lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
+
+          lazydev = { module = 'lazydev.integrations.blink', score_offset = 9 },
 
           dadbod = { name = 'Dadbod', module = 'vim_dadbod_completion.blink' },
 
           path = {
             name = 'PATH',
-            score_offset = 100, -- higher = more preferred
+            score_offset = 9, -- higher = more preferred
           },
 
           minuet = {
             name = 'FIM',
-            score_offset = 90, -- Gives minuet higher priority among suggestions
+            score_offset = 8, -- Gives minuet higher priority among suggestions
 
             module = 'minuet.blink',
             async = true,
@@ -1520,12 +1626,12 @@ require('lazy').setup({
 
           lsp = {
             name = 'LSP',
-            score_offset = 80,
+            score_offset = 7,
           },
 
           snippets = {
             name = 'SNPT',
-            score_offset = 70,
+            score_offset = 6,
           },
 
           -- Use the thesaurus source
@@ -1575,6 +1681,7 @@ require('lazy').setup({
 
         per_filetype = {
           sql = { 'minuet', 'snippets', 'dadbod', 'buffer' },
+          codecompanion = { 'codecompanion', 'lsp', 'path', 'snippets', 'buffer', 'lazydev', 'dictionary', 'thesaurus' },
         },
       },
 
