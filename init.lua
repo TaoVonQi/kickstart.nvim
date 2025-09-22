@@ -12,9 +12,9 @@ end
 local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
 
+require 'opts'
 require 'autocmds'
 require 'keymaps'
-require 'opts'
 
 require('lazy').setup {
   spec = 'lazySetup',

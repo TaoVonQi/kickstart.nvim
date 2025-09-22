@@ -9,7 +9,7 @@ return {
     action_palette = {
       width = 180,
       height = 50,
-      provider = 'telescope', -- Can be "default", "telescope", "fzf_lua", "mini_pick" or "snacks". If not specified, the plugin will autodetect installed providers.
+      provider = 'snacks', -- Can be "default", "telescope", "fzf_lua", "mini_pick" or "snacks". If not specified, the plugin will autodetect installed providers.
       opts = {
         show_default_actions = true, -- Show the default actions in the action palette?
         show_default_prompt_library = true, -- Show the default prompt library in the action palette?
@@ -46,7 +46,7 @@ return {
         -- Number of days after which chats are automatically deleted (0 to disable)
         expiration_days = 0,
         -- Picker interface (auto resolved to a valid picker)
-        picker = 'telescope', --- ("telescope", "snacks", "fzf-lua", or "default")
+        picker = 'snacks', --- ("telescope", "snacks", "fzf-lua", or "default")
         ---Optional filter function to control which chats are shown when browsing
         chat_filter = nil, -- function(chat_data) return boolean end
         -- Customize picker keymaps (optional)

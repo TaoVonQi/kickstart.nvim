@@ -11,6 +11,15 @@ return {
   'tpope/vim-surround',
 
   {
+    'folke/snacks.nvim',
+    priority = 1000,
+    lazy = false,
+    opts = require('setup.snacksmod').opts(),
+    keys = require('setup.snacksmod').keys(),
+    init = require('setup.snacksmod').init(),
+  },
+
+  {
     'kristijanhusak/vim-dadbod-ui',
     dependencies = {
       { 'tpope/vim-dadbod', lazy = true },
@@ -188,13 +197,6 @@ return {
     opts = require 'setup.treesitter',
   },
 
-  -- {
-  --   "folke/snacks.nvim",
-  --   priority = 1000,
-  --   lazy = false,
-  --   opts = require("setup.snacks"),
-  -- },
-
   {
     'saghen/blink.cmp',
     event = 'VimEnter',
@@ -287,28 +289,28 @@ return {
     config = get_setup 'illuminate',
   },
 
-  {
-    'nvim-telescope/telescope.nvim',
-    event = 'VimEnter',
-    dependencies = {
-      'debugloop/telescope-undo.nvim',
-      'nvim-lua/plenary.nvim',
-      {
-        'nvim-telescope/telescope-fzf-native.nvim',
-        build = 'make',
-        cond = function()
-          return vim.fn.executable 'make' == 1
-        end,
-      },
-      { 'nvim-telescope/telescope-ui-select.nvim' },
-
-      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
-
-      {
-        'olimorris/persisted.nvim',
-        config = get_setup 'persisted',
-      },
-    },
-    config = get_setup 'telescope',
-  },
+  -- {
+  --   'nvim-telescope/telescope.nvim',
+  --   event = 'VimEnter',
+  --   dependencies = {
+  --     'debugloop/telescope-undo.nvim',
+  --     'nvim-lua/plenary.nvim',
+  --     {
+  --       'nvim-telescope/telescope-fzf-native.nvim',
+  --       build = 'make',
+  --       cond = function()
+  --         return vim.fn.executable 'make' == 1
+  --       end,
+  --     },
+  --     { 'nvim-telescope/telescope-ui-select.nvim' },
+  --
+  --     { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+  --
+  --     {
+  --       'olimorris/persisted.nvim',
+  --       config = get_setup 'persisted',
+  --     },
+  --   },
+  --   config = get_setup 'telescope',
+  -- },
 }

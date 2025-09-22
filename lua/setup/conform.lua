@@ -19,7 +19,7 @@ require('conform').setup {
   },
   formatters = {
     stylua = {
-      args = { '--indent-width', '3', '--indent-type', 'Spaces', '-' },
+      args = { '--indent-width', '2', '--indent-type', 'Spaces', '-' },
     },
     prettier = {
       require_cwd = true,

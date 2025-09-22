@@ -1,4 +1,3 @@
--- ~/.config/nvim/lua/user/markview.lua
 local M = {}
 
 function M.opts()
@@ -36,4 +35,4 @@ function M.opts()
   }
 end
 
-return M.opts
+return M.opts()
