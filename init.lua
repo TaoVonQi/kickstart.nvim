@@ -14,8 +14,9 @@ rtp:prepend(lazypath)
 
 require 'opts'
 require 'autocmds'
-require 'keymaps'
 
 require('lazy').setup {
   spec = 'lazySetup',
 }
+
+require 'keymaps'

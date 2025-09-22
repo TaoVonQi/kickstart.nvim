@@ -41,8 +41,14 @@ require('which-key').setup {
 
   -- Document existing key chains
   spec = {
+    { '<leader>b', group = '[B]uffer' },
+    { '<leader>c', group = '[C]odecompanion' },
+    { '<leader>f', group = '[F]ind' },
+    { '<leader>o', group = 'Carg[O]' },
     { '<leader>s', group = '[S]earch' },
     { '<leader>t', group = '[T]oggle' },
+    { '<leader>g', group = '[G]it' },
     { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+    { '<leader>w', group = 's[W]ap' },
   },
 }

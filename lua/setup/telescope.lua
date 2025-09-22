@@ -49,27 +49,6 @@ function M.setup()
   pcall(require('telescope').load_extension, 'undo')
   pcall(require('telescope').load_extension, 'persisted')
 
-  local crates = require 'crates'
-
-  vim.keymap.set('n', '<leader>gt', crates.toggle, { desc = 'car[g]o [t]oggle' })
-  vim.keymap.set('n', '<leader>gr', crates.reload, { desc = 'car[g]o [r]eload' })
-
-  vim.keymap.set('n', '<leader>gv', crates.show_versions_popup, { desc = 'car[g]o [v]ersions popup' })
-  vim.keymap.set('n', '<leader>gf', crates.show_features_popup, { desc = 'car[g]o [f]eatures popup' })
-  vim.keymap.set('n', '<leader>gd', crates.show_dependencies_popup, { desc = 'car[g]o [d]ependencies popup' })
-
-  vim.keymap.set('n', '<leader>gu', crates.update_crate, { desc = 'car[g]o [u]pdate crate' })
-  vim.keymap.set('v', '<leader>gu', crates.update_crates, { desc = 'car[g]o [u]pdate crates' })
-  vim.keymap.set('n', '<leader>ga', crates.update_all_crates, { desc = 'car[g]o update [a]ll crates' })
-
-  vim.keymap.set('n', '<leader>gx', crates.expand_plain_crate_to_inline_table, { desc = 'car[g]o e[x]pand' })
-  vim.keymap.set('n', '<leader>gX', crates.extract_crate_into_table, { desc = 'car[g]o e[X]tract' })
-
-  vim.keymap.set('n', '<leader>gH', crates.open_homepage, { desc = 'car[g]o [H]ome page' })
-  vim.keymap.set('n', '<leader>gR', crates.open_repository, { desc = 'car[g]o [R]epository' })
-  vim.keymap.set('n', '<leader>gD', crates.open_documentation, { desc = 'car[g]o [D]ocumentation' })
-  vim.keymap.set('n', '<leader>gC', crates.open_crates_io, { desc = 'car[g]o [C]rates.io' })
-
   vim.keymap.set('n', '<leader>u', '<cmd>Telescope undo<cr>', { desc = 'Telescope [u]ndo' })
 
   vim.keymap.set('n', '<leader>p', ':Telescope persisted<cr>', { desc = '[p]ersisted sessions' })

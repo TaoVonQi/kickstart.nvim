@@ -11,11 +11,11 @@ function M.setup()
 
       -- Rename the variable under your cursor.
       --  Most Language Servers support renaming across files, etc.
-      map('glr', vim.lsp.buf.rename, '[L]SP [R]ename')
+      map('glr', vim.lsp.buf.rename, '[R]ename')
 
       -- Execute a code action, usually your cursor needs to be on top of an error
       -- or a suggestion from your LSP for this to activate.
-      map('gla', vim.lsp.buf.code_action, '[L]SP Code [A]ction', { 'n', 'x' })
+      map('gla', vim.lsp.buf.code_action, 'Code [A]ction', { 'n', 'x' })
 
       -- Find references for the word under your cursor.
       -- map('grr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
@@ -29,7 +29,7 @@ function M.setup()
       --  To jump back, press <C-t>.
       -- map('grd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
 
-      map('gld', vim.lsp.buf.declaration, '[L]SP [D]eclaration')
+      -- map('gld', vim.lsp.buf.declaration, '[D]eclaration')
 
       -- Fuzzy find all the symbols in your current document.
       --  Symbols are things like variables, functions, types, etc.

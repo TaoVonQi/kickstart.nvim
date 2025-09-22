@@ -79,6 +79,7 @@ return {
 
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
+    event = 'BufReadPre',
     opts = {
       signs = {
         add = { text = '+' },
@@ -156,12 +157,6 @@ return {
       { '\\', ':Neotree reveal<CR>', desc = 'NeoTree reveal', silent = true },
     },
     opts = require 'setup.neotree',
-  },
-
-  {
-    'lewis6991/gitsigns.nvim',
-    event = 'BufReadPre',
-    opts = require 'setup.gitsigns',
   },
 
   {

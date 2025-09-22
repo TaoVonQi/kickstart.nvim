@@ -38,9 +38,9 @@ return {
       enabled = true,
       opts = {
         -- Keymap to open history from chat buffer (default: gh)
-        keymap = 'gao',
+        keymap = 'gho',
         -- Keymap to save the current chat manually (when auto_save is disabled)
-        save_chat_keymap = 'gas',
+        save_chat_keymap = 'ghs',
         -- Save all chats by default (disable to save only manually using 'sc')
         auto_save = true,
         -- Number of days after which chats are automatically deleted (0 to disable)
@@ -80,9 +80,9 @@ return {
         -- Summary system
         summary = {
           -- Keymap to generate summary for current chat (default: "gcs")
-          create_summary_keymap = 'gac',
+          create_summary_keymap = 'ghc',
           -- Keymap to browse summaries (default: "gbs")
-          browse_summaries_keymap = 'gab',
+          browse_summaries_keymap = 'ghb',
 
           generation_opts = {
             context_size = 128000, -- max tokens that the model supports
