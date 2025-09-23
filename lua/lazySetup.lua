@@ -19,6 +19,23 @@ return {
     init = require('setup.snacksmod').init(),
   },
 
+  { 'catppuccin/nvim', name = 'catppuccin' },
+
+  {
+    'folke/tokyonight.nvim',
+    priority = 1000,
+    lazy = false,
+    config = function()
+      ---@diagnostic disable-next-line: missing-fields
+      require('tokyonight').setup {
+        styles = {
+          comments = { italic = false },
+        },
+      }
+      vim.cmd.colorscheme 'tokyonight-night'
+    end,
+  },
+
   {
     'kristijanhusak/vim-dadbod-ui',
     dependencies = {
@@ -89,21 +106,6 @@ return {
         changedelete = { text = '~' },
       },
     },
-  },
-
-  { -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
-    priority = 1000,
-    lazy = false,
-    config = function()
-      ---@diagnostic disable-next-line: missing-fields
-      require('tokyonight').setup {
-        styles = {
-          comments = { italic = false },
-        },
-      }
-      vim.cmd.colorscheme 'tokyonight-night'
-    end,
   },
 
   { -- Collection of various small independent plugins/modules
