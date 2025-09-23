@@ -11,6 +11,12 @@ return {
   'tpope/vim-surround',
 
   {
+    'folke/persistence.nvim',
+    event = 'BufReadPre',
+    opts = {},
+  },
+
+  {
     'folke/snacks.nvim',
     priority = 1000,
     lazy = false,
@@ -134,7 +140,7 @@ return {
     config = get_setup 'lint',
   },
 
-  { -- Add indentation guides even on blank lines
+  {
     'lukas-reineke/indent-blankline.nvim',
     main = 'ibl', -- See `:help ibl`
     opts = {},

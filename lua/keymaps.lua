@@ -28,6 +28,10 @@ vim.keymap.set('n', '<leader>cs', ':CodeCompanionSummaries<CR>', { desc = '[C]od
 
 vim.keymap.set('n', '<leader>tm', ':Minuet blink toggle<CR>', { desc = '[M]inuet toggle ' })
 
+vim.keymap.set('n', '<leader>p', function()
+  require('persistence').select()
+end, { desc = 'Select [P]ersistencte session ' })
+
 -- recommended mappings
 -- resizing splits
 -- these keymaps will also accept a range,

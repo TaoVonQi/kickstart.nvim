@@ -4,14 +4,14 @@ local M = {}
 
 function M.opts()
   return {
-    bigfile = { enabled = true },
-    dashboard = { enabled = true },
-    explorer = { enabled = true },
+    image = { enabled = false },
     indent = { enabled = true },
+    bigfile = { enabled = true },
+    explorer = { enabled = true, replace_netrw = true },
     input = { enabled = true },
     notifier = {
       enabled = true,
-      timeout = 3000,
+      timeout = 5000,
     },
     picker = { enabled = true },
     quickfile = { enabled = true },
@@ -22,6 +22,30 @@ function M.opts()
     styles = {
       notification = {
         wo = { wrap = true },
+      },
+    },
+    dashboard = {
+      enabled = true,
+      sections = {
+        { section = 'header' },
+        { section = 'keys', gap = 1, padding = 1 },
+        { pane = 2, icon = ' ', title = 'Recent Files', section = 'recent_files', indent = 2, padding = 1 },
+        { pane = 2, icon = ' ', title = 'Projects', section = 'projects', indent = 2, padding = 1 },
+        {
+          pane = 2,
+          icon = ' ',
+          title = 'Git Status',
+          section = 'terminal',
+          enabled = function()
+            return Snacks.git.get_root() ~= nil
+          end,
+          cmd = 'git status --short --branch --renames',
+          height = 5,
+          padding = 1,
+          ttl = 5 * 60,
+          indent = 3,
+        },
+        { section = 'startup' },
       },
     },
   }
