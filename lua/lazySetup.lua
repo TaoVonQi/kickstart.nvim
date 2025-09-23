@@ -11,6 +11,12 @@ return {
   'tpope/vim-surround',
 
   {
+    'RRethy/vim-illuminate',
+    event = 'VimEnter',
+    config = get_setup 'illuminate',
+  },
+
+  {
     'folke/persistence.nvim',
     event = 'BufReadPre',
     opts = {},
@@ -23,6 +29,14 @@ return {
     opts = require('setup.snacksmod').opts(),
     keys = require('setup.snacksmod').keys(),
     init = require('setup.snacksmod').init(),
+  },
+
+  {
+    'folke/trouble.nvim',
+    lazy = false,
+    cmd = 'Trouble',
+    opts = require('setup.trouble').opts(),
+    keys = require('setup.trouble').keys(),
   },
 
   { 'catppuccin/nvim', name = 'catppuccin' },
@@ -118,7 +132,6 @@ return {
     'echasnovski/mini.nvim',
     config = function()
       -- Better Around/Inside textobjects
-      --
       -- Examples:
       --  - va)  - [V]isually select [A]round [)]paren
       --  - yinq - [Y]ank [I]nside [N]ext [Q]uote
@@ -126,7 +139,6 @@ return {
       require('mini.ai').setup { n_lines = 500 }
 
       -- Add/delete/replace surroundings (brackets, quotes, etc.)
-      --
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
@@ -160,12 +172,6 @@ return {
   },
 
   {
-    'nvim-lualine/lualine.nvim',
-    dependencies = { 'nvim-tree/nvim-web-devicons', 'tpope/vim-fugitive' },
-    config = get_setup 'lualine',
-  },
-
-  {
     'folke/which-key.nvim',
     event = 'VimEnter',
     config = get_setup 'whichkey',
@@ -181,7 +187,6 @@ return {
       event = 'VeryLazy',
       opts = require 'setup.markview',
     },
-
     opts = require 'setup.treesitter',
   },
 
@@ -197,12 +202,21 @@ return {
       },
       'mason-org/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
+
+      {
+        'j-hui/fidget.nvim',
+        config = function()
+          require('fidget').setup {}
+        end,
+      },
+
       {
         'saghen/blink.cmp',
         version = '1.*',
         dependencies = {
           'archie-judd/blink-cmp-words',
           'xzbdmw/colorful-menu.nvim',
+
           {
             'folke/lazydev.nvim',
             -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
@@ -216,11 +230,21 @@ return {
               globals = { 'vim' },
             },
           },
+
           {
-            'milanglacier/minuet-ai.nvim',
-            dependencies = { 'nvim-lua/plenary.nvim' },
-            config = get_setup 'minuet',
+            'nvim-lualine/lualine.nvim',
+            dependencies = {
+              'nvim-tree/nvim-web-devicons',
+              {
+                'milanglacier/minuet-ai.nvim',
+                dependencies = { 'nvim-lua/plenary.nvim' },
+                config = get_setup 'minuet',
+              },
+            },
+
+            config = get_setup 'lualine',
           },
+
           {
             -- Snippet Engine
             'L3MON4D3/LuaSnip',
@@ -245,13 +269,6 @@ return {
           return opts
         end,
       },
-
-      {
-        'j-hui/fidget.nvim',
-        config = function()
-          require('fidget').setup {}
-        end,
-      },
     },
     config = get_setup 'lsp',
   },
@@ -263,12 +280,6 @@ return {
     config = function()
       require('crates').setup {}
     end,
-  },
-
-  { --vim-illuminate
-    'RRethy/vim-illuminate',
-    event = 'VimEnter', -- Sets the loading event to 'VimEnter'
-    config = get_setup 'illuminate',
   },
 
   -- {

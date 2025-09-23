@@ -46,6 +46,7 @@ require('which-key').setup {
     { '<leader>f', group = '[F]ind' },
     { '<leader>o', group = 'Carg[O]' },
     { '<leader>s', group = '[S]earch' },
+    { '<leader>r', group = 't[R]ouble' },
     { '<leader>t', group = '[T]oggle' },
     { '<leader>g', group = '[G]it' },
     { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },

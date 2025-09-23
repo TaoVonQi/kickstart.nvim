@@ -47,7 +47,7 @@ require('minuet').setup {
   -- actual number of returned items may exceed this value. Additionally, the
   -- LLM cannot guarantee the exact number of completion items specified, as
   -- this parameter serves only as a prompt guideline.
-  n_completions = 3,
+  n_completions = 5,
 
   -- Length of context after cursor used to filter completion text.
   -- This setting helps prevent the language model from generating redundant
