@@ -1,4 +1,9 @@
 require('minuet').setup {
+
+  blink = {
+    enable_auto_complete = false,
+  },
+
   -- the maximum total characters of the context before and after the cursor
   -- 16000 characters typically equate to approximately 4,000 tokens for
   -- LLMs.

@@ -147,21 +147,6 @@ return {
   },
 
   {
-    'nvim-neo-tree/neo-tree.nvim',
-    lazy = false,
-    version = '*',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-      'nvim-tree/nvim-web-devicons',
-      'MunifTanjim/nui.nvim',
-    },
-    keys = {
-      { '\\', ':Neotree reveal<CR>', desc = 'NeoTree reveal', silent = true },
-    },
-    opts = require 'setup.neotree',
-  },
-
-  {
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
     cmd = { 'ConformInfo' },
@@ -195,53 +180,8 @@ return {
   },
 
   {
-    'saghen/blink.cmp',
-    event = 'VimEnter',
-    version = '1.*',
-    dependencies = {
-      'xzbdmw/colorful-menu.nvim',
-      'archie-judd/blink-cmp-words',
-      {
-        -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
-        -- used for completion, annotations and signatures of Neovim apis
-        'folke/lazydev.nvim',
-        ft = 'lua',
-        opts = {
-          library = {
-            -- Load luvit types when the `vim.uv` word is found
-            { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
-          },
-        },
-      },
-      {
-        'milanglacier/minuet-ai.nvim',
-        dependencies = { 'nvim-lua/plenary.nvim' },
-        config = get_setup 'minuet',
-      },
-      {
-        -- Snippet Engine
-        'L3MON4D3/LuaSnip',
-        version = '2.*',
-        build = 'make install_jsregexp',
-        dependencies = {
-          {
-            'rafamadriz/friendly-snippets',
-            config = function()
-              require('luasnip.loaders.from_vscode').lazy_load()
-            end,
-          },
-        },
-        opts = {},
-      },
-    },
-    snippets = { preset = 'luasnip' },
-    fuzzy = { implementation = 'prefer_rust_with_warning' },
-    signature = { enabled = true },
-    opts = require 'setup.blink',
-  },
-
-  {
     'neovim/nvim-lspconfig',
+    event = 'VimEnter',
     dependencies = {
       {
         'mason-org/mason.nvim',
@@ -251,20 +191,59 @@ return {
       },
       'mason-org/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
-      'saghen/blink.cmp',
+      {
+        'saghen/blink.cmp',
+        version = '1.*',
+        dependencies = {
+          'archie-judd/blink-cmp-words',
+          'xzbdmw/colorful-menu.nvim',
+          {
+            'folke/lazydev.nvim',
+            -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
+            -- used for completion, annotations and signatures of Neovim apis
+            ft = 'lua',
+            opts = {
+              library = {
+                -- Load luvit types when the `vim.uv` word is found
+                { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
+              },
+              globals = { 'vim' },
+            },
+          },
+          {
+            'milanglacier/minuet-ai.nvim',
+            dependencies = { 'nvim-lua/plenary.nvim' },
+            config = get_setup 'minuet',
+          },
+          {
+            -- Snippet Engine
+            'L3MON4D3/LuaSnip',
+            version = '2.*',
+            build = 'make install_jsregexp',
+            dependencies = {
+              {
+                'rafamadriz/friendly-snippets',
+                config = function()
+                  require('luasnip.loaders.from_vscode').lazy_load()
+                end,
+              },
+            },
+            opts = {},
+          },
+        },
+        snippets = { preset = 'luasnip' },
+        fuzzy = { implementation = 'prefer_rust_with_warning' },
+        signature = { enabled = true },
+        opts = function()
+          local opts = require 'setup.blink'
+          return opts
+        end,
+      },
+
       {
         'j-hui/fidget.nvim',
         config = function()
           require('fidget').setup {}
-        end,
-      },
-      {
-        'onsails/lspkind.nvim',
-        config = function()
-          require('lspkind').setup {
-            mode = 'symbol_text',
-            preset = 'default',
-          }
         end,
       },
     },

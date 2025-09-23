@@ -20,11 +20,13 @@ vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 --
 vim.keymap.set('n', '<C-w>t', ':tabnew<cr>', { desc = 'new [t]ab' })
 
-vim.keymap.set('n', '<leader>ct', ':CodeCompanionChat Toggle<CR>', { desc = 'Code[Companion] [T]oggle ' })
-vim.keymap.set('n', '<leader>ca', ':CodeCompanionActions<CR>', { desc = 'Code[Companion] [A]ctions ' })
-vim.keymap.set('n', '<leader>cc', ':CodeCompanionCmd<CR>', { desc = 'Code[Companion] [C]md ' })
-vim.keymap.set('n', '<leader>ch', ':CodeCompanionHistory<CR>', { desc = 'Code[Companion] [H]istory ' })
-vim.keymap.set('n', '<leader>cs', ':CodeCompanionSummaries<CR>', { desc = 'Code[Companion] [S]ummaries ' })
+vim.keymap.set('n', '<leader>ct', ':CodeCompanionChat Toggle<CR>', { desc = '[C]odecompanion [T]oggle ' })
+vim.keymap.set('n', '<leader>ca', ':CodeCompanionActions<CR>', { desc = '[C]odecompanion [A]ctions ' })
+vim.keymap.set('n', '<leader>cc', ':CodeCompanionCmd<CR>', { desc = '[C]odecompanion [C]md ' })
+vim.keymap.set('n', '<leader>ch', ':CodeCompanionHistory<CR>', { desc = '[C]odecompanion [H]istory ' })
+vim.keymap.set('n', '<leader>cs', ':CodeCompanionSummaries<CR>', { desc = '[C]odecompanion [S]ummaries ' })
+
+vim.keymap.set('n', '<leader>tm', ':Minuet blink toggle<CR>', { desc = '[M]inuet toggle ' })
 
 -- recommended mappings
 -- resizing splits

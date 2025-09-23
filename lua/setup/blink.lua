@@ -14,6 +14,9 @@ return {
     --
     -- See :h blink-cmp-config-keymap for defining your own keymap
     preset = 'default',
+
+    -- Manually invoke minuet completion.
+    ['<A-m>'] = require('minuet').make_blink_map(),
   },
 
   appearance = {
@@ -31,12 +34,11 @@ return {
       },
     },
 
-    documentation = { auto_show = true, auto_show_delay_ms = 50, window = { border = 'rounded' } },
+    documentation = { auto_show = true, auto_show_delay_ms = 50 },
 
     trigger = { prefetch_on_insert = false },
 
     menu = {
-      border = 'rounded',
       draw = {
         -- We don't need label_description now because label and label_description are already
         -- combined together in label by colorful-menu.nvim.
@@ -82,12 +84,12 @@ return {
 
       path = {
         name = 'PATH',
-        score_offset = 9, -- higher = more preferred
+        score_offset = 8, -- higher = more preferred
       },
 
       minuet = {
         name = 'FIM',
-        score_offset = 8, -- Gives minuet higher priority among suggestions
+        score_offset = 7, -- Gives minuet higher priority among suggestions
 
         module = 'minuet.blink',
         async = true,
@@ -98,12 +100,12 @@ return {
 
       lsp = {
         name = 'LSP',
-        score_offset = 7,
+        score_offset = 6,
       },
 
       snippets = {
         name = 'SNPT',
-        score_offset = 6,
+        score_offset = 5,
       },
 
       -- Use the thesaurus source
