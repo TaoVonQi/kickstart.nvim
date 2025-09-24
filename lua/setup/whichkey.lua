@@ -44,6 +44,7 @@ require('which-key').setup {
     { '<leader>b', group = '[B]uffer' },
     { '<leader>c', group = '[C]odecompanion' },
     { '<leader>f', group = '[F]ind' },
+    { '<leader>l', group = '[L]SP' },
     { '<leader>o', group = 'Carg[O]' },
     { '<leader>s', group = '[S]earch' },
     { '<leader>r', group = 't[R]ouble' },

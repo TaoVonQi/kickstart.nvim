@@ -35,8 +35,33 @@ return {
     'folke/trouble.nvim',
     lazy = false,
     cmd = 'Trouble',
-    opts = require('setup.trouble').opts(),
-    keys = require('setup.trouble').keys(),
+    opts = {},
+  },
+
+  {
+    'antosha417/nvim-lsp-file-operations',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      {
+        'nvim-neo-tree/neo-tree.nvim',
+        lazy = false,
+        version = '*',
+        dependencies = {
+          'nvim-lua/plenary.nvim',
+          'MunifTanjim/nui.nvim',
+          'nvim-tree/nvim-web-devicons',
+          {
+            's1n7ax/nvim-window-picker',
+            version = '2.*',
+            config = get_setup 'windowpicker',
+          },
+        },
+        opts = require 'setup.neotree',
+      },
+    },
+    config = function()
+      require('lsp-file-operations').setup()
+    end,
   },
 
   { 'catppuccin/nvim', name = 'catppuccin' },
@@ -104,7 +129,7 @@ return {
 
   {
     'ggandor/leap.nvim',
-    config = get_setup 'leap',
+    opts = {},
   },
 
   {

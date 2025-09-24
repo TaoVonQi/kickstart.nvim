@@ -9,15 +9,17 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
--- TIP: Disable arrow keys in normal mode
+-- Disable arrow keys in normal mode
 vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
 vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
 vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
 vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
--- Keybinds to make split navigation easier.
---  Use CTRL+<hjkl> to switch between windows
---
+vim.keymap.set('n', '<leader>e', '<Cmd>Neotree toggle<CR>', { desc = 'Neotree [E]xplorer' })
+
+vim.keymap.set({ 'n', 'v', 'x' }, '<leader>j', '<Plug>(leap-forward)', { desc = '[J]ump forward' })
+vim.keymap.set({ 'n', 'v', 'x' }, '<leader>J', '<Plug>(leap-backward)', { desc = '[J]ump backwards' })
+
 vim.keymap.set('n', '<C-w>t', ':tabnew<cr>', { desc = 'new [t]ab' })
 
 vim.keymap.set('n', '<leader>ct', ':CodeCompanionChat Toggle<CR>', { desc = '[C]odecompanion [T]oggle ' })
@@ -32,11 +34,43 @@ vim.keymap.set('n', '<leader>p', function()
   require('persistence').select()
 end, { desc = 'Select [P]ersistencte session ' })
 
--- recommended mappings
--- resizing splits
--- these keymaps will also accept a range,
--- for example `10<A-h>` will `resize_left` by `(10 * config.default_amount)`
+-- The Trouble command is a wrapper around the Trouble API. It can do anything the regular API can do.
+--     Trouble [mode] [action] [options]
+
+-- Modes:
+--
+--     diagnostics: diagnostics
+--     loclist: Location List
+--     lsp: LSP definitions, references, implementations, type definitions, and declarations
+--     lsp_command: command
+--     lsp_declarations: declarations
+--     lsp_definitions: definitions
+--     lsp_document_symbols: document symbols
+--     lsp_implementations: implementations
+--     lsp_incoming_calls: Incoming Calls
+--     lsp_outgoing_calls: Outgoing Calls
+--     lsp_references: references
+--     lsp_type_definitions: type definitions
+--     qflist: Quickfix List
+--     quickfix: Quickfix List
+--     snacks: Snacks results previously opened with require('trouble.sources.snacks').open().
+--     snacks_files: Snacks results previously opened with require('trouble.sources.snacks').open().
+--     symbols: document symbols
+
+vim.keymap.set('n', '<leader>rd', '<cmd>Trouble diagnostics toggle focus=false<cr>', { desc = '[D]iagnostics All' })
+vim.keymap.set('n', '<leader>rD', '<cmd>Trouble diagnostics toggle focus=false filter.buf=0<cr>', { desc = '[D]iagnostics Buffer' })
+
+vim.keymap.set('n', '<leader>rs', '<cmd>Trouble symbols toggle focus=false win.position=right<cr>', { desc = '[S]ymbols' })
+
+vim.keymap.set('n', '<leader>rl', '<cmd>Trouble lsp_document_symbols toggle focus=false win.position=right<cr>', { desc = '[L]SP document symbols' })
+
+vim.keymap.set('n', '<leader>rL', '<cmd>Trouble lsp toggle focus=false win.position=right<cr>', { desc = '[L]SP Definitions' })
+
+vim.keymap.set('n', '<leader>rc', '<cmd>Trouble loclist toggle<cr>', { desc = 'Lo[C]ation List' })
+vim.keymap.set('n', '<leader>rq', '<cmd>Trouble qflist toggle<cr>', { desc = '[Q]uickfix List' })
+
 local splits = require 'smart-splits'
+-- resizing splits
 vim.keymap.set('n', '<A-h>', splits.resize_left)
 vim.keymap.set('n', '<A-j>', splits.resize_down)
 vim.keymap.set('n', '<A-k>', splits.resize_up)
@@ -60,7 +94,7 @@ local function map(mode, l, r, opts)
   vim.keymap.set(mode, l, r, opts)
 end
 
--- Navigation
+-- Gitsigns Navigation
 map('n', ']c', function()
   if vim.wo.diff then
     vim.cmd.normal { ']c', bang = true }
@@ -76,8 +110,6 @@ map('n', '[c', function()
     gitsigns.nav_hunk { 'prev' }
   end
 end, { desc = 'Jump to previous git [c]hange' })
-
--- Actions
 
 -- visual mode
 map('v', '<leader>hs', function()
@@ -106,6 +138,7 @@ end, { desc = 'git [D]iff against last commit' })
 map('n', '<leader>tb', gitsigns.toggle_current_line_blame, { desc = '[T]oggle git show [b]lame line' })
 map('n', '<leader>tD', gitsigns.preview_hunk_inline, { desc = '[T]oggle git show [D]eleted' })
 
+--Rust crates
 local crates = require 'crates'
 vim.keymap.set('n', '<leader>ot', crates.toggle, { desc = 'cargo [t]oggle' })
 vim.keymap.set('n', '<leader>or', crates.reload, { desc = 'cargo [r]eload' })

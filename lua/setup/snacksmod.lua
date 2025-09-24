@@ -7,7 +7,6 @@ function M.opts()
     image = { enabled = false },
     indent = { enabled = true },
     bigfile = { enabled = true },
-    explorer = { enabled = true, replace_netrw = true },
     input = { enabled = true },
     notifier = {
       enabled = true,
@@ -15,43 +14,8 @@ function M.opts()
     },
     picker = {
       enabled = true,
-      explorer = {
-        win = {
-          list = {
-            keys = {
-              ['<BS>'] = 'explorer_up',
-              ['l'] = 'confirm',
-              ['h'] = 'explorer_close', -- close directory
-              ['a'] = 'explorer_add',
-              ['d'] = 'explorer_del',
-              ['r'] = 'explorer_rename',
-              ['c'] = 'explorer_copy',
-              ['m'] = 'explorer_move',
-              ['o'] = 'explorer_open', -- open with system application
-              ['P'] = 'toggle_preview',
-              ['y'] = { 'explorer_yank', mode = { 'n', 'x' } },
-              ['p'] = 'explorer_paste',
-              ['u'] = 'explorer_update',
-              ['<c-c>'] = 'tcd',
-              ['<leader>/'] = 'picker_grep',
-              ['<c-t>'] = 'terminal',
-              ['.'] = 'explorer_focus',
-              ['I'] = 'toggle_ignored',
-              ['H'] = 'toggle_hidden',
-              ['Z'] = 'explorer_close_all',
-              [']g'] = 'explorer_git_next',
-              ['[g'] = 'explorer_git_prev',
-              [']d'] = 'explorer_diagnostic_next',
-              ['[d'] = 'explorer_diagnostic_prev',
-              [']w'] = 'explorer_warn_next',
-              ['[w'] = 'explorer_warn_prev',
-              [']e'] = 'explorer_error_next',
-              ['[e'] = 'explorer_error_prev',
-            },
-          },
-        },
-      },
     },
+    explorer = { enabled = false },
     quickfile = { enabled = true },
     scope = { enabled = true },
     scroll = { enabled = true },
@@ -67,8 +31,8 @@ function M.opts()
       sections = {
         { section = 'header' },
         { section = 'keys', gap = 1, padding = 1 },
-        { pane = 2, icon = ' ', title = 'Recent Files', section = 'recent_files', indent = 2, padding = 1 },
         { pane = 2, icon = ' ', title = 'Projects', section = 'projects', indent = 2, padding = 1 },
+        { pane = 2, icon = ' ', title = 'Recent Files', section = 'recent_files', indent = 2, padding = 1 },
         {
           pane = 2,
           icon = ' ',
@@ -127,13 +91,6 @@ function M.keys()
         Snacks.picker.notifications()
       end,
       desc = 'Notification History',
-    },
-    {
-      '<leader>e',
-      function()
-        Snacks.explorer()
-      end,
-      desc = 'File Explorer',
     },
     -- find
     {
@@ -401,50 +358,50 @@ function M.keys()
     },
     -- LSP
     {
-      'gd',
+      '<leader>ld',
       function()
         Snacks.picker.lsp_definitions()
       end,
-      desc = 'Goto Definition',
+      desc = 'Goto [D]efinition',
     },
     {
-      'gD',
+      '<leader>lD',
       function()
         Snacks.picker.lsp_declarations()
       end,
-      desc = 'Goto Declaration',
+      desc = 'Goto [D]eclaration',
     },
     {
-      'gr',
+      '<leader>lr',
       function()
         Snacks.picker.lsp_references()
       end,
       nowait = true,
-      desc = 'References',
+      desc = '[R]eferences',
     },
     {
-      'gI',
+      '<leader>lI',
       function()
         Snacks.picker.lsp_implementations()
       end,
       desc = 'Goto Implementation',
     },
     {
-      'gy',
+      '<leader>ly',
       function()
         Snacks.picker.lsp_type_definitions()
       end,
       desc = 'Goto T[y]pe Definition',
     },
     {
-      '<leader>ss',
+      '<leader>ls',
       function()
         Snacks.picker.lsp_symbols()
       end,
       desc = 'LSP Symbols',
     },
     {
-      '<leader>sS',
+      '<leader>lS',
       function()
         Snacks.picker.lsp_workspace_symbols()
       end,
