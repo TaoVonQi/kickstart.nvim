@@ -53,8 +53,6 @@ function M.setup()
 
   vim.keymap.set('n', '<leader>p', ':Telescope persisted<cr>', { desc = '[p]ersisted sessions' })
 
-  vim.keymap.set('n', '<leader>M', ':MCPHub<cr>', { desc = '[M]cpHub' })
-
   -- See `:help telescope.builtin`
   local builtin = require 'telescope.builtin'
   vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })

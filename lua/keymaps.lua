@@ -22,6 +22,8 @@ vim.keymap.set({ 'n', 'v', 'x' }, '<leader>J', '<Plug>(leap-backward)', { desc =
 
 vim.keymap.set('n', '<C-w>t', ':tabnew<cr>', { desc = 'new [t]ab' })
 
+vim.keymap.set('n', '<leader>m', ':MCPHub<cr>', { desc = '[M]cpHub' })
+
 vim.keymap.set('n', '<leader>ct', ':CodeCompanionChat Toggle<CR>', { desc = '[C]odecompanion [T]oggle ' })
 vim.keymap.set('n', '<leader>ca', ':CodeCompanionActions<CR>', { desc = '[C]odecompanion [A]ctions ' })
 vim.keymap.set('n', '<leader>cc', ':CodeCompanionCmd<CR>', { desc = '[C]odecompanion [C]md ' })
