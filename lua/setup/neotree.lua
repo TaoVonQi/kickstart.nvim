@@ -12,6 +12,7 @@ return {
           nowait = false,
           config = { title = 'Order by', prefix_key = 'o' },
         },
+        ['I'] = 'toggle_hidden',
         ['sc'] = { 'order_by_created', nowait = false },
         ['sd'] = { 'order_by_diagnostics', nowait = false },
         ['sg'] = { 'order_by_git_status', nowait = false },
