@@ -1,8 +1,11 @@
 return {
   strategies = {
-    chat = { adapter = { name = 'ollama', model = 'mygptoss_high_reasoning:20b' } },
-    inline = { adapter = { name = 'ollama', model = 'mygptoss_high_reasoning:20b' } },
-    cmd = { adapter = { name = 'ollama', model = 'mygptoss_high_reasoning:20b' } },
+    chat = {
+      adapter = { name = 'ollama', model = 'mygptoss_medium_reasoning:20b' },
+      tools = { opts = { system_prompt = { enabled = true, replace_main_system_prompt = false } } },
+    },
+    inline = { adapter = { name = 'ollama', model = 'mygptoss_medium_reasoning:20b' } },
+    cmd = { adapter = { name = 'ollama', model = 'mygptoss_medium_reasoning:20b' } },
   },
   display = {
 
