@@ -7,12 +7,12 @@ return {
     use_libuv_file_watcher = true, -- This will use the OS level file watchers to detect changes,
     window = {
       mappings = {
+        ['I'] = 'toggle_hidden',
         ['s'] = {
           'show_help',
           nowait = false,
-          config = { title = 'Order by', prefix_key = 'o' },
+          config = { title = 'Order by', prefix_key = 's' },
         },
-        ['I'] = 'toggle_hidden',
         ['sc'] = { 'order_by_created', nowait = false },
         ['sd'] = { 'order_by_diagnostics', nowait = false },
         ['sg'] = { 'order_by_git_status', nowait = false },
@@ -36,7 +36,8 @@ return {
         nowait = false, -- disable `nowait` if you have existing combos starting with this char that you want to use
       },
       ['<2-LeftMouse>'] = 'open',
-      ['<cr>'] = 'open',
+      ['<cr>'] = 'open_with_window_picker',
+      ['o'] = 'open_with_window_picker',
       ['<esc>'] = 'cancel', -- close preview or floating neo-tree window
       ['P'] = {
         'toggle_preview',
@@ -56,7 +57,6 @@ return {
       ['<c-t>'] = 'open_tabnew',
       -- ["<cr>"] = "open_drop",
       -- ["t"] = "open_tab_drop",
-      ['o'] = 'open_with_window_picker',
       --["P"] = "toggle_preview", -- enter preview mode, which shows the current node without focusing
       ['h'] = 'close_node',
       ['H'] = 'close_all_subnodes',
