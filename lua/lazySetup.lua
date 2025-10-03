@@ -295,7 +295,9 @@ return {
         end,
       },
     },
-    config = get_setup 'lsp',
+    config = function()
+      require('setup.lsp').setup()
+    end,
   },
 
   {
