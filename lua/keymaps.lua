@@ -60,14 +60,42 @@ end, { desc = 'Select [P]ersistencte session ' })
 --     snacks_files: Snacks results previously opened with require('trouble.sources.snacks').open().
 --     symbols: document symbols
 
-vim.keymap.set('n', '<leader>rd', '<cmd>Trouble diagnostics toggle focus=false<cr>', { desc = '[D]iagnostics All' })
-vim.keymap.set('n', '<leader>rD', '<cmd>Trouble diagnostics toggle focus=false filter.buf=0<cr>', { desc = '[D]iagnostics Buffer' })
+vim.keymap.set('n', '<leader>rd', function()
+  vim.cmd 'Trouble diagnostics toggle filter.buf=0'
+  vim.cmd 'Trouble diagnostics fold_close_all filter.buf=0'
+  vim.cmd 'Trouble diagnostics fold_open filter.buf=0'
+end, { desc = '[D]iagnostics Buffer' })
 
-vim.keymap.set('n', '<leader>rs', '<cmd>Trouble symbols toggle focus=false win.position=right<cr>', { desc = '[S]ymbols' })
+vim.keymap.set('n', '<leader>rD', function()
+  vim.cmd 'Trouble diagnostics toggle'
+  vim.cmd 'Trouble diagnostics fold_close_all'
+  vim.cmd 'Trouble diagnostics fold_open'
+end, { desc = '[D]iagnostics All' })
 
-vim.keymap.set('n', '<leader>rl', '<cmd>Trouble lsp_document_symbols toggle focus=false win.position=right<cr>', { desc = '[L]SP document symbols' })
+vim.keymap.set('n', '<leader>rs', function()
+  vim.cmd 'Trouble lsp close'
+  vim.cmd 'Trouble lsp_document_symbols close'
+  vim.cmd 'Trouble symbols open win.position=right win.size=50'
+  vim.cmd 'Trouble symbols next'
+  vim.cmd 'Trouble symbols fold_close_all'
+  vim.cmd 'Trouble symbols fold_open'
+end, { desc = '[S]ymbols' })
 
-vim.keymap.set('n', '<leader>rL', '<cmd>Trouble lsp toggle focus=false win.position=right<cr>', { desc = '[L]SP Definitions' })
+vim.keymap.set('n', '<leader>rl', function()
+  vim.cmd 'Trouble symbols close'
+  vim.cmd 'Trouble lsp close'
+  vim.cmd 'Trouble lsp_document_symbols open win.position=right win.size=50'
+  vim.cmd 'Trouble lsp_document_symbols next'
+  vim.cmd 'Trouble lsp_document_symbols fold_close_all'
+  vim.cmd 'Trouble lsp_document_symbols fold_open'
+end, { desc = '[L]SP document symbols' })
+
+vim.keymap.set('n', '<leader>rL', function()
+  vim.cmd 'Trouble symbols close'
+  vim.cmd 'Trouble lsp_document_symbols close'
+  vim.cmd 'Trouble lsp open win.position=right win.size=50'
+  vim.cmd 'Trouble lsp fold_close_all'
+end, { desc = '[L]SP Definitions' })
 
 vim.keymap.set('n', '<leader>rc', '<cmd>Trouble loclist toggle<cr>', { desc = 'Lo[C]ation List' })
 vim.keymap.set('n', '<leader>rq', '<cmd>Trouble qflist toggle<cr>', { desc = '[Q]uickfix List' })
