@@ -122,7 +122,6 @@ return {
     dependencies = {
       'nvim-lua/plenary.nvim',
       'ravitemer/mcphub.nvim',
-      'ravitemer/codecompanion-history.nvim',
     },
     opts = require 'setup.codecompanion',
   },

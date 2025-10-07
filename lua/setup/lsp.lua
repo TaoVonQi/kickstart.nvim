@@ -76,7 +76,7 @@ function M.setup()
           analysis = {
             autoSearchPaths = true,
             useLibraryCodeForTypes = true,
-            diagnosticMode = 'workspace',
+            diagnosticMode = 'openFilesOnly',
           },
         },
       },

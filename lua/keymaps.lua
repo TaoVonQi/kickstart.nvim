@@ -28,8 +28,8 @@ vim.keymap.set('n', '<leader>ct', ':CodeCompanionChat Toggle<CR>', { desc = '[C]
 vim.keymap.set({ 'n', 'v' }, '<leader>ca', ':CodeCompanionActions<CR>', { desc = '[C]odecompanion [A]ctions ' })
 vim.keymap.set({ 'n', 'v' }, '<leader>ci', ':CodeCompanion ', { desc = '[C]odecompanion [I]nline' })
 vim.keymap.set('n', '<leader>cc', ':CodeCompanionCmd ', { desc = '[C]odecompanion [C]md ' })
-vim.keymap.set('n', '<leader>ch', ':CodeCompanionHistory<CR>', { desc = '[C]odecompanion [H]istory ' })
-vim.keymap.set('n', '<leader>cs', ':CodeCompanionSummaries<CR>', { desc = '[C]odecompanion [S]ummaries ' })
+-- vim.keymap.set('n', '<leader>ch', ':CodeCompanionHistory<CR>', { desc = '[C]odecompanion [H]istory ' })
+-- vim.keymap.set('n', '<leader>cs', ':CodeCompanionSummaries<CR>', { desc = '[C]odecompanion [S]ummaries ' })
 
 vim.keymap.set('n', '<leader>tm', ':Minuet blink toggle<CR>', { desc = '[M]inuet toggle ' })
 
