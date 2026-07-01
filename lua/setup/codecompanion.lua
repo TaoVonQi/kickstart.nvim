@@ -45,7 +45,7 @@ return {
           ['pair_programmer'] = {
             description = 'Pair programmer engineer - can search the web, run code, edit code and modify files',
             tools = {
-              'perplexica_mcp__web_search',
+              -- 'perplexica_mcp__web_search',
               'fetch_webpage',
               'cmd_runner',
               'grep_search',
