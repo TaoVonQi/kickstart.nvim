@@ -7,7 +7,7 @@ return {
   --     },
   --   },
   -- },
-  strategies = {
+  interactions = {
     cmd = { adapter = { name = 'ollama', model = 'mygptoss_medium_reasoning:20b' } },
     inline = { adapter = { name = 'ollama', model = 'mygptoss_high_reasoning:20b' } },
     chat = {
@@ -54,8 +54,6 @@ return {
               'read_file',
               'get_changed_files',
               'insert_edit_into_file',
-              'next_edit_suggestion',
-              'list_code_usages',
             },
             opts = {
               collapse_tools = true, -- When true, show as a single group reference instead of individual tools
@@ -72,14 +70,14 @@ return {
       height = 50,
       provider = 'snacks', -- Can be "default", "telescope", "fzf_lua", "mini_pick" or "snacks". If not specified, the plugin will autodetect installed providers.
       opts = {
-        show_default_actions = true, -- Show the default actions in the action palette?
-        show_default_prompt_library = true, -- Show the default prompt library in the action palette?
+        show_preset_actions = true,
+        show_preset_prompts = true,
         title = 'CodeCompanion actions', -- The title of the action palette
       },
     },
     diff = {
       enabled = true,
-      provider = split, -- mini_diff|split|inline
+      provider = 'split',
 
       provider_opts = {
         -- Options for inline diff provider
@@ -144,7 +142,7 @@ return {
         show_result_in_chat = true, -- Show tool results directly in chat buffer
         format_tool = nil, -- function(tool_name:string, tool: CodeCompanion.Agent.Tool) : string Function to format tool names to show in the chat buffer
         -- MCP Resources
-        make_vars = true, -- Convert MCP resources to #variables for prompts
+        make_vars = false, -- Convert MCP resources to #variables for prompts
         -- MCP Prompts
         make_slash_commands = true, -- Add MCP prompts as /slash commands
       },

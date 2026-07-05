@@ -11,6 +11,52 @@ return {
   'tpope/vim-surround',
 
   {
+    'romus204/tree-sitter-manager.nvim',
+    dependencies = {}, -- tree-sitter CLI must be installed system-wide
+    config = function()
+      require('tree-sitter-manager').setup {
+        -- Default Options
+        assume_installed = {}, -- blacklist languages
+        ensure_installed = {
+          'dockerfile',
+          'git_config',
+          'gitcommit',
+          'gitignore',
+          'bash',
+          'python',
+          'rust',
+          'c',
+          'diff',
+          'html',
+          'javascript',
+          'css',
+          'scss',
+          'tsx',
+          'lua',
+          'luadoc',
+          'markdown',
+          'markdown_inline',
+          'query',
+          'vim',
+          'vimdoc',
+          'regex',
+          'yaml',
+          'json',
+          'json5',
+          'toml',
+        }, -- parsers to install at startup
+        auto_install = true, -- auto-install when a new filetype is encountered
+        noauto_install = {}, -- blacklist from auto_install
+        highlight = true, -- enable treesitter highlighting (use list to whitelist)
+        nerdfont = true, -- use Nerd Font icons in the manager UI
+        border = 'rounded', -- border style for the TUI window
+        min_width = 78, -- minimum size of the TUI
+        min_height = 40,
+      }
+    end,
+  },
+
+  {
     'RRethy/vim-illuminate',
     event = 'VimEnter',
     config = get_setup 'illuminate',
@@ -127,7 +173,7 @@ return {
   },
 
   {
-    'ggandor/leap.nvim',
+    url = 'https://codeberg.org/andyg/leap.nvim',
     opts = {},
   },
 
@@ -202,19 +248,6 @@ return {
   },
 
   {
-    'nvim-treesitter/nvim-treesitter',
-    lazy = false,
-    build = ':TSUpdate',
-    main = 'nvim-treesitter.configs', -- Sets main module to use for opts
-    dependencies = {
-      'OXY2DEV/markview.nvim',
-      event = 'VeryLazy',
-      opts = require 'setup.markview',
-    },
-    opts = require 'setup.treesitter',
-  },
-
-  {
     'neovim/nvim-lspconfig',
     event = 'VimEnter',
     dependencies = {
@@ -232,6 +265,17 @@ return {
         config = function()
           require('fidget').setup {}
         end,
+      },
+
+      {
+        'OXY2DEV/markview.nvim',
+        lazy = false,
+        opts = {
+          preview = {
+            filetypes = { 'markdown', 'codecompanion' },
+            ignore_buftypes = {},
+          },
+        },
       },
 
       {
